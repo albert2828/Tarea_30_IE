@@ -18,6 +18,7 @@ names(BD)
 
 ## Extraer solo las variables que nos interesan para los anális
 tarea <- BD[,c(6,10,11,12,13,14,15,16,18,21,22,23,24,25,26,27,28,29,30,31,32,33,34,38)]
+tarea <- filter(tarea, tarea$RESULTADO_LAB==1)
 #head(tarea)
 #str(tarea)
 
@@ -50,3 +51,4 @@ cambio_sex <- function(s){
 tarea$SEXO <- sapply(tarea$SEXO, cambio_sex)
 ## Cambiar comorbilidades a 0 - 1
 
+## 
