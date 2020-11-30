@@ -30,7 +30,7 @@ tarea$FECHA_SINTOMAS <- as.Date(tarea$FECHA_SINTOMAS)
 
 tarea$FECHA_DEF <- unlist(lapply(tarea$FECHA_DEF,cambio))
 tarea$FECHA_DEF <- as.Date(tarea$FECHA_DEF)
-            
+tarea$FECHA_DEF[tarea$FECHA_DEF==as.Date("1900-01-31")] = NA            
 
             
 ## Cambiar varaible de sexo por H - M
@@ -51,6 +51,6 @@ tarea$OBESIDAD <- sapply(tarea$OBESIDAD, cambio_sino)
 tarea$RENAL_CRONICA <- sapply(tarea$RENAL_CRONICA, cambio_sino)
 tarea$TABAQUISMO <- sapply(tarea$TABAQUISMO, cambio_sino)
 tarea$TOMA_MUESTRA <- sapply(tarea$TOMA_MUESTRA, cambio_sino)
+tarea$UCI <- sapply(tarea$UCI, cambio_sino)
 
-
-## 
+## Pregunta 1
