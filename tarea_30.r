@@ -53,4 +53,9 @@ tarea$TABAQUISMO <- sapply(tarea$TABAQUISMO, cambio_sino)
 tarea$TOMA_MUESTRA <- sapply(tarea$TOMA_MUESTRA, cambio_sino)
 tarea$UCI <- sapply(tarea$UCI, cambio_sino)
 
+
+## Dividir por rangos de edad
+
+tarea <- mutate(tarea, RANGO_DE_EDAD = as.factor(sapply(tarea$EDAD, rango_edad)))
+
 ## Pregunta 1
