@@ -19,8 +19,8 @@ names(BD)
 
 ## Extraer solo las variables que nos interesan para los anális
 tarea <- BD %>% 
-            filter(CLASIFICACION_FINAL %in% c(1,2,3)) %>%
-            select(c(6,8,9,10,11,12,13,14,15,16,18,21,22,23,24,25,26,27,28,29,30,32,33,34,38))
+            filter(RESULTADO_LAB==1) %>%
+            select(c(1,6,8,9,11,12,13,16,21,22,23,24,25,27,28,29,30))
 #head(tarea)
 #str(tarea)
 
@@ -36,38 +36,36 @@ tarea$FECHA_DEF[tarea$FECHA_DEF==as.Date("1900-01-31")] = NA
 ## Cambiar varaible de sexo por H - M
 tarea$SEXO <- sapply(tarea$SEXO, cambio_sex)
 
-## Cambiar varaibres a 0's  1's
-tarea$INTUBADO <- sapply(tarea$INTUBADO, cambio_sino)
-tarea$NEUMONIA <- sapply(tarea$NEUMONIA, cambio_sino)
-tarea$EMBARAZO <- sapply(tarea$EMBARAZO, cambio_sino)
+## Cambiar variables a 0's  1's
 tarea$DIABETES <- sapply(tarea$DIABETES, cambio_sino)
 tarea$EPOC <- sapply(tarea$EPOC, cambio_sino)
 tarea$ASMA <- sapply(tarea$ASMA, cambio_sino)
 tarea$INMUSUPR <- sapply(tarea$INMUSUPR, cambio_sino)
 tarea$HIPERTENSION <- sapply(tarea$HIPERTENSION, cambio_sino)
-tarea$OTRA_COM <- sapply(tarea$OTRA_COM, cambio_sino)
 tarea$CARDIOVASCULAR <- sapply(tarea$CARDIOVASCULAR, cambio_sino)
 tarea$OBESIDAD <- sapply(tarea$OBESIDAD, cambio_sino)
 tarea$RENAL_CRONICA <- sapply(tarea$RENAL_CRONICA, cambio_sino)
 tarea$TABAQUISMO <- sapply(tarea$TABAQUISMO, cambio_sino)
-tarea$TOMA_MUESTRA <- sapply(tarea$TOMA_MUESTRA, cambio_sino)
-tarea$UCI <- sapply(tarea$UCI, cambio_sino)
 
 
 ## Dividir por rangos de edad
-
 tarea <- mutate(tarea, RANGO_DE_EDAD = as.factor(sapply(tarea$EDAD, rango_edad)))
-tarea <- mutate(tarea, DEFUNCION = !is.na(tarea$FECHA_DEF))
+
+## Agregar variable de si fallecieron o no
+tarea <- mutate(tarea, DEFUNCION = 1*(!is.na(tarea$FECHA_DEF)))
 
 ## Pregunta 1
 
 p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
-            select(FECHA_DEF, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
-            group_by(FECHA_DEF, SEXO, RANGO_DE_EDAD) %>%
-            summarize(NUM_DEF = sum(DEFUNCION))            
+            select(FECHA_SINTOMAS, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
+            group_by(FECHA_SINTOMAS, SEXO, RANGO_DE_EDAD) %>%
+            summarize(NUM_DEF = sum(DEFUNCION)) %>%
+            arrange(SEXO, RANGO_DE_EDAD) 
+
+## Agregar mejor fecha de actualización
 
 H_J <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "0-19") %>%
-            select(FECHA_DEF,NUM_DEF)
+            select(FECHA_SINTOMAS,NUM_DEF)
 
 p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
             geom_bar(stat = "identity")+
@@ -76,6 +74,13 @@ p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
 p+scale_x_date(date_labels = "%Y %b %d")
 dev.copy(png, file="pregunta1_H_0-19.png")
 dev.off()
+
+p <- ggplot(H_J, aes(x=FECHA_SINTOMAS, y=NUM_DEF)) +
+            geom_line()+
+            xlab("")+
+            ylim(0,10)+
+            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 0-19 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
 
 M_J <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "0-19") %>%
             select(FECHA_DEF,NUM_DEF)
@@ -186,6 +191,7 @@ tb_tab <- table(filter(p2[,c("DEFUNCION", "TABAQUISMO")], !is.na(p2$TABAQUISMO))
 tb_tab
 
 ## PRegunta 3
+## Y si nos quedamos solo con los que fallecieron y hacemos un t-test entre las diferencias de los d?as?
 
 p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
             mutate(SINT_INGR = FECHA_INGRESO - FECHA_SINTOMAS, 
