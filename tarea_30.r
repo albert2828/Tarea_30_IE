@@ -190,5 +190,9 @@ tb_tab
 p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
             mutate(SINT_INGR = FECHA_INGRESO - FECHA_SINTOMAS, 
                    SINT_FALLECE =FECHA_DEF-FECHA_SINTOMAS)
+p3$SINT_INGR <- as.integer(p3$SINT_INGR)
+p3$SINT_FALLECE <- as.integer(p3$SINT_FALLECE)
 
-
+hist(p3$SINT_INGR)
+dev.copy(png, file="pregunta3_sintomas_ingreso.png")
+dev.off()
