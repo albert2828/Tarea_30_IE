@@ -57,5 +57,130 @@ tarea$UCI <- sapply(tarea$UCI, cambio_sino)
 ## Dividir por rangos de edad
 
 tarea <- mutate(tarea, RANGO_DE_EDAD = as.factor(sapply(tarea$EDAD, rango_edad)))
+tarea <- mutate(tarea, DEFUNCION = !is.na(tarea$FECHA_DEF))
 
 ## Pregunta 1
+
+p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
+            select(FECHA_DEF, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
+            group_by(FECHA_DEF, SEXO, RANGO_DE_EDAD) %>%
+            summarize(NUM_DEF = sum(DEFUNCION))            
+
+H_J <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "0-19") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 0-19 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_H_0-19.png")
+dev.off()
+
+M_J <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "0-19") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(M_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 0-19 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_M_0-19.png")
+dev.off()
+
+H_A <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "20-39") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(H_A, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 20-39 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_H_20-39.png")
+dev.off()
+
+M_A <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "20-39") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(M_A, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 20-39 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_M_20-39.png")
+dev.off()
+
+H_M <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "40-59") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 40-59 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_H_40-59.png")
+dev.off()
+
+M_M <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "40-59") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(M_M, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 40-59 en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_M_40-59.png")
+dev.off()
+
+H_V <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "60 +") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 60 + la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_H_60.png")
+dev.off()
+
+M_V <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "60 +") %>%
+            select(FECHA_DEF,NUM_DEF)
+
+p <- ggplot(M_M, aes(x=FECHA_DEF, y=NUM_DEF)) +
+            geom_bar(stat = "identity")+
+            xlab("")+
+            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 60 + en la CDMX")
+p+scale_x_date(date_labels = "%Y %b %d")
+dev.copy(png, file="pregunta1_M_60.png")
+dev.off()
+
+## Pregunta 2
+
+p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR,
+             OBESIDAD, RENAL_CRONICA, TABAQUISMO) 
+tb_diabetes <- table(filter(p2[,c("DEFUNCION", "DIABETES")], !is.na(p2$DIABETES)))
+tb_diabetes
+
+tb_epoc <- table(filter(p2[,c("DEFUNCION", "EPOC")], !is.na(p2$EPOC)))
+tb_epoc
+
+tb_asma <- table(filter(p2[,c("DEFUNCION", "ASMA")], !is.na(p2$ASMA)))
+tb_asma
+
+tb_inmun <- table(filter(p2[,c("DEFUNCION", "INMUSUPR")], !is.na(p2$INMUSUPR)))
+tb_inmun
+
+tb_hipert <- table(filter(p2[,c("DEFUNCION", "HIPERTENSION")], !is.na(p2$HIPERTENSION)))
+tb_hipert
+
+tb_cardio <- table(filter(p2[,c("DEFUNCION", "CARDIOVASCULAR")], !is.na(p2$CARDIOVASCULAR)))
+tb_cardio
+
+tb_obesidad <- table(filter(p2[,c("DEFUNCION", "OBESIDAD")], !is.na(p2$OBESIDAD)))
+tb_obesidad
+
+tb_renal <- table(filter(p2[,c("DEFUNCION", "RENAL_CRONICA")], !is.na(p2$RENAL_CRONICA)))
+tb_renal
+
+tb_tab <- table(filter(p2[,c("DEFUNCION", "TABAQUISMO")], !is.na(p2$TABAQUISMO)))
+tb_tab
