@@ -184,3 +184,11 @@ tb_renal
 
 tb_tab <- table(filter(p2[,c("DEFUNCION", "TABAQUISMO")], !is.na(p2$TABAQUISMO)))
 tb_tab
+
+## PRegunta 3
+
+p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
+            mutate(SINT_INGR = FECHA_INGRESO - FECHA_SINTOMAS, 
+                   SINT_FALLECE =FECHA_DEF-FECHA_SINTOMAS)
+
+
