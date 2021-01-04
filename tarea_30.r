@@ -4,7 +4,8 @@ library(dplyr)
 source("extras.r")
 source("auxiliares.r")
 
-my_filedate <- "201122"
+my_filedate <- "210103" # format(Sys.Date(), "%y%m%d")
+# formato "yymmdd", es mejor probar con el día anterior
 
 
 tt <- system.time(BD <- leo_base(my_filedate))[3]
@@ -63,13 +64,16 @@ p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
             summarize(NUM_DEF = sum(DEFUNCION)) %>%
             arrange(SEXO, RANGO_DE_EDAD) 
 
-p1["Factor"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
-p1$Factor <- as.factor(p1$Factor)
+p1["Sexo_Edad"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
+p1$Sexo_Edad <- as.factor(p1$Sexo_Edad)
 
-p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Factor))+
-            geom_line()
-p+scale_x_date(date_labels = "%Y %b %d")
-
+p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, group= Sexo_Edad, colour = Sexo_Edad))+
+            geom_line(size = 1.2)
+p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14))
+dev.copy(png, file="pregunta1.png")
+dev.off()
 
 ## Pregunta 2
 
