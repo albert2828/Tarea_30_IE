@@ -20,7 +20,7 @@ names(BD)
 ## Extraer solo las variables que nos interesan para los anális
 tarea <- BD %>% 
             filter(RESULTADO_LAB==1) %>%
-            select(c(1,6,8,9,11,12,13,16,21,22,23,24,25,27,28,29,30))
+            select(c(6,8,9,11,12,13,16,21,22,23,24,25,27,28,29,30))
 #head(tarea)
 #str(tarea)
 
@@ -56,108 +56,20 @@ tarea <- mutate(tarea, DEFUNCION = 1*(!is.na(tarea$FECHA_DEF)))
 
 ## Pregunta 1
 
+
 p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
-            select(FECHA_SINTOMAS, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
-            group_by(FECHA_SINTOMAS, SEXO, RANGO_DE_EDAD) %>%
+            select(FECHA_SINTOMAS, FECHA_DEF, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
+            group_by(FECHA_DEF, SEXO, RANGO_DE_EDAD) %>%
             summarize(NUM_DEF = sum(DEFUNCION)) %>%
             arrange(SEXO, RANGO_DE_EDAD) 
 
-## Agregar mejor fecha de actualización
+p1["Factor"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
+p1$Factor <- as.factor(p1$Factor)
 
-H_J <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "0-19") %>%
-            select(FECHA_SINTOMAS,NUM_DEF)
-
-p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 0-19 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_H_0-19.png")
-dev.off()
-
-p <- ggplot(H_J, aes(x=FECHA_SINTOMAS, y=NUM_DEF)) +
-            geom_line()+
-            xlab("")+
-            ylim(0,10)+
-            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 0-19 en la CDMX")
+p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Factor))+
+            geom_line()
 p+scale_x_date(date_labels = "%Y %b %d")
 
-M_J <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "0-19") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(M_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 0-19 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_M_0-19.png")
-dev.off()
-
-H_A <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "20-39") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(H_A, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 20-39 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_H_20-39.png")
-dev.off()
-
-M_A <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "20-39") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(M_A, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 20-39 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_M_20-39.png")
-dev.off()
-
-H_M <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "40-59") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 40-59 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_H_40-59.png")
-dev.off()
-
-M_M <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "40-59") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(M_M, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 40-59 en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_M_40-59.png")
-dev.off()
-
-H_V <- p1 %>% filter(SEXO=="H", RANGO_DE_EDAD == "60 +") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(H_J, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo masculino por día en el rango de edad 60 + la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_H_60.png")
-dev.off()
-
-M_V <- p1 %>% filter(SEXO=="M", RANGO_DE_EDAD == "60 +") %>%
-            select(FECHA_DEF,NUM_DEF)
-
-p <- ggplot(M_M, aes(x=FECHA_DEF, y=NUM_DEF)) +
-            geom_bar(stat = "identity")+
-            xlab("")+
-            ggtitle("Número de defunciones del sexo femenino por día en el rango de edad 60 + en la CDMX")
-p+scale_x_date(date_labels = "%Y %b %d")
-dev.copy(png, file="pregunta1_M_60.png")
-dev.off()
 
 ## Pregunta 2
 
