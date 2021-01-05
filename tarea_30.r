@@ -97,34 +97,9 @@ p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
 p3$SINT_INGR <- as.integer(p3$SINT_INGR)
 p3$SINT_FALLECE <- as.integer(p3$SINT_FALLECE)
 
+
 hist(p3$SINT_INGR)
 dev.copy(png, file="pregunta3_sintomas_ingreso.png")
 dev.off()
 
-sint_ingresos <- difftime(tarea$FECHA_INGRESO,tarea$FECHA_SINTOMAS, units = c("days"))
-sint_ingresos <- as.integer(sint_ingresos)
-tb_sint_ingr <- table(sint_ingresos)
-df_sint_ingr <- as.data.frame(tb_sint_ingr)
-df_sint_ingr$sint_ingresos <- as.integer(df_sint_ingr$sint_ingresos)
-df_sint_ingr <- df_sint_ingr[df_sint_ingr$sint_ingresos<40,]
-
-ggplot(df_sint_ingr, aes(x=sint_ingresos, y=Freq))+
-            geom_bar(stat = "identity")
-
-lambda <- mean(sint_ingresos)            
-
-prop_sint_ingr <- prop.table(tb_sint_ingr)
-df_prop <- as.data.frame(prop_sint_ingr)
-df_prop$sint_ingresos <- as.integer(df_prop$sint_ingresos)
-df_prop <- df_prop[df_prop$sint_ingresos<40,]
-
-ggplot(df_prop, aes(x=sint_ingresos, y=Freq))+
-            geom_bar(stat = "identity")
-
-pp <- dpois(df_prop$sint_ingresos, lambda)
-
-df_pois <- data.frame(x = df_prop$sint_ingresos, prob = pp)
-
-ggplot(df_pois, aes(x=x, y=prob))+
-            geom_bar(stat = "identity")
 
