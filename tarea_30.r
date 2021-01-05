@@ -79,34 +79,16 @@ dev.off()
 
 p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR,
              OBESIDAD, RENAL_CRONICA, TABAQUISMO) 
-tb_diabetes <- table(filter(p2[,c("DEFUNCION", "DIABETES")], !is.na(p2$DIABETES)))
-tb_diabetes
 
-tb_epoc <- table(filter(p2[,c("DEFUNCION", "EPOC")], !is.na(p2$EPOC)))
-tb_epoc
+tables <- list(NULL)
 
-tb_asma <- table(filter(p2[,c("DEFUNCION", "ASMA")], !is.na(p2$ASMA)))
-tb_asma
+for (i in 2:10) {
+            tables[[i-1]] <- table(filter(p2[,c(1, i)], !is.na(p2[,i])))
+}
 
-tb_inmun <- table(filter(p2[,c("DEFUNCION", "INMUSUPR")], !is.na(p2$INMUSUPR)))
-tb_inmun
 
-tb_hipert <- table(filter(p2[,c("DEFUNCION", "HIPERTENSION")], !is.na(p2$HIPERTENSION)))
-tb_hipert
 
-tb_cardio <- table(filter(p2[,c("DEFUNCION", "CARDIOVASCULAR")], !is.na(p2$CARDIOVASCULAR)))
-tb_cardio
-
-tb_obesidad <- table(filter(p2[,c("DEFUNCION", "OBESIDAD")], !is.na(p2$OBESIDAD)))
-tb_obesidad
-
-tb_renal <- table(filter(p2[,c("DEFUNCION", "RENAL_CRONICA")], !is.na(p2$RENAL_CRONICA)))
-tb_renal
-
-tb_tab <- table(filter(p2[,c("DEFUNCION", "TABAQUISMO")], !is.na(p2$TABAQUISMO)))
-tb_tab
-
-## PRegunta 3
+## Pregunta 3
 ## Y si nos quedamos solo con los que fallecieron y hacemos un t-test entre las diferencias de los d?as?
 
 p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
@@ -118,3 +100,31 @@ p3$SINT_FALLECE <- as.integer(p3$SINT_FALLECE)
 hist(p3$SINT_INGR)
 dev.copy(png, file="pregunta3_sintomas_ingreso.png")
 dev.off()
+
+sint_ingresos <- difftime(tarea$FECHA_INGRESO,tarea$FECHA_SINTOMAS, units = c("days"))
+sint_ingresos <- as.integer(sint_ingresos)
+tb_sint_ingr <- table(sint_ingresos)
+df_sint_ingr <- as.data.frame(tb_sint_ingr)
+df_sint_ingr$sint_ingresos <- as.integer(df_sint_ingr$sint_ingresos)
+df_sint_ingr <- df_sint_ingr[df_sint_ingr$sint_ingresos<40,]
+
+ggplot(df_sint_ingr, aes(x=sint_ingresos, y=Freq))+
+            geom_bar(stat = "identity")
+
+lambda <- mean(sint_ingresos)            
+
+prop_sint_ingr <- prop.table(tb_sint_ingr)
+df_prop <- as.data.frame(prop_sint_ingr)
+df_prop$sint_ingresos <- as.integer(df_prop$sint_ingresos)
+df_prop <- df_prop[df_prop$sint_ingresos<40,]
+
+ggplot(df_prop, aes(x=sint_ingresos, y=Freq))+
+            geom_bar(stat = "identity")
+
+pp <- dpois(df_prop$sint_ingresos, lambda)
+
+df_pois <- data.frame(x = df_prop$sint_ingresos, prob = pp)
+
+ggplot(df_pois, aes(x=x, y=prob))+
+            geom_bar(stat = "identity")
+
