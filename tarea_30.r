@@ -66,12 +66,26 @@ p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
 
 p1["Sexo_Edad"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
 p1$Sexo_Edad <- as.factor(p1$Sexo_Edad)
+p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_Edad == "M 60 +"
 
-p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, group= Sexo_Edad, colour = Sexo_Edad))+
-            geom_line(size = 1.2)
+mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
+
+p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_line(aes(linetype = rango_esp), size = 1.1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Divido por sexo y rangos de edad",
+                 x = "Fecha",
+                 y= "Muertes",
+                 color = "Sexo_edad")+
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
-                  legend.text = element_text(size = 14))
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_linetype_manual(values = c("dashed", "solid"), guide = "none")+
+            scale_color_manual(values = mycolors)
+
 dev.copy(png, file="pregunta1.png")
 dev.off()
 
@@ -92,14 +106,29 @@ for (i in 2:10) {
 ## Y si nos quedamos solo con los que fallecieron y hacemos un t-test entre las diferencias de los d?as?
 
 p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF) %>%
-            mutate(SINT_INGR = FECHA_INGRESO - FECHA_SINTOMAS, 
-                   SINT_FALLECE =FECHA_DEF-FECHA_SINTOMAS)
-p3$SINT_INGR <- as.integer(p3$SINT_INGR)
-p3$SINT_FALLECE <- as.integer(p3$SINT_FALLECE)
+            mutate(SINT_INGR = as.integer(FECHA_INGRESO - FECHA_SINTOMAS), 
+                   SINT_FALLECE = as.integer(FECHA_DEF-FECHA_SINTOMAS))
+
+p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR) %>%
+            filter(SINT_INGR<20)
+
+p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
+            filter(SINT_FALLECE<40)
+
+p <- ggplot(p3i, aes(x=SINT_INGR))+
+            geom_histogram()
+p + 
+            labs(title = "Frequencia de días que tarda una persona en acudir a la clínica",
+         x= "Número de días",
+         y= "Frecuencia") +
+            theme(axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 15))
 
 
-hist(p3$SINT_INGR)
 dev.copy(png, file="pregunta3_sintomas_ingreso.png")
 dev.off()
 
+lambda1 <- mean(p3i$SINT_INGR)
+lambda2 <- mean(p3f$SINT_FALLECE)
 
+hist(p3$SINT_INGR, breaks = 30)
