@@ -128,7 +128,22 @@ p +
 dev.copy(png, file="pregunta3_sintomas_ingreso.png")
 dev.off()
 
+p <- ggplot(p3f, aes(x=SINT_FALLECE))+
+            geom_histogram()
+p + 
+            labs(title = "Frequencia de días que tarda una persona en morir a partir de que tiene sìntomas",
+                 x= "Número de días",
+                 y= "Frecuencia") +
+            theme(axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 15))
+
+
+
 lambda1 <- mean(p3i$SINT_INGR)
 lambda2 <- mean(p3f$SINT_FALLECE)
+
+
+
+
 
 hist(p3$SINT_INGR, breaks = 30)
