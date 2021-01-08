@@ -154,6 +154,9 @@ table(p3_2[,c("SINT_INGR","DEFUNCION")])
 def_tarde.tble <- table(p3_2[,c("DEFUNCION", "fue_al_doctor")])   
 def_tarde.fisher.test <- fisher.test(def_tarde.tble)
 def_tarde.fisher.test
+def_tarde_cs.test <- chisq.test(def_tarde.tble)
+def_tarde_cs.test
+
 
 prob_def_t.tets <- with(p3_2, t.test(DEFUNCION ~ fue_al_doctor, alt = "l"))
 prob_def_t.tets
