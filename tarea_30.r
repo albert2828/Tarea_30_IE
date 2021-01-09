@@ -103,7 +103,6 @@ for (i in 2:10) {
 
 
 ## Pregunta 3
-## Y si nos quedamos solo con los que fallecieron y hacemos un t-test entre las diferencias de los d?as?
 
 p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION) %>%
             mutate(SINT_INGR = as.integer(FECHA_INGRESO - FECHA_SINTOMAS), 
@@ -144,28 +143,50 @@ lambda2 <- mean(p3f$SINT_FALLECE)
 sdi <- sd(p3i$SINT_INGR)
 sdf <- sd(p3f$SINT_FALLECE)
 
+
+
+
 ## Queremos saber sin mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 p3_2 <- p3 %>% select(SINT_INGR, DEFUNCION) %>%
             filter(SINT_INGR <= 20) %>%
             mutate(fue_al_doctor = cut(SINT_INGR, breaks = c(-1,7,max(SINT_INGR)), 
                                        labels = c("pronto","tarde")))
 
-table(p3_2[,c("SINT_INGR","DEFUNCION")])
-def_tarde.tble <- table(p3_2[,c("DEFUNCION", "fue_al_doctor")])   
-def_tarde.fisher.test <- fisher.test(def_tarde.tble)
-def_tarde.fisher.test
-def_tarde_cs.test <- chisq.test(def_tarde.tble)
-def_tarde_cs.test
+## Extraemos una muestra para hacer el test chi^2
+set.seed(30)
+muestra.pacientes = sample(1:length(p3_2$SINT_INGR), 116757)
+
+muestra.p3 <- p3_2[muestra.pacientes,]
+muestra.p3.table <- table(muestra.p3[,c("DEFUNCION","fue_al_doctor")])
+muestra.p3.table
+
+test.chiq.7 <- chisq.test(muestra.p3.table)$residuals
+test.chiq.7
+
+## https://rpubs.com/Joaquin_AR/220579
+#library(vcd)
+#assocstats(muestra.p3.table) 
 
 
-prob_def_t.tets <- with(p3_2, t.test(DEFUNCION ~ fue_al_doctor, alt = "l"))
-prob_def_t.tets
+## Parece haber una asociación entre tardar en ir al doctor y la probabilidad de fallecer
 
-prob_def_t.tets <- with(p3_2, wilcox.test(DEFUNCION ~ fue_al_doctor, alt = "l"))
-prob_def_t.tets
+## Hacemos lo mismo, pero cambiamos el break esta vez a 4
+
+p3_2 <- p3 %>% select(SINT_INGR, DEFUNCION) %>%
+            filter(SINT_INGR <= 20) %>%
+            mutate(fue_al_doctor = cut(SINT_INGR, breaks = c(-1,4,max(SINT_INGR)), 
+                                       labels = c("pronto","tarde")))
+
+muestra.p3 <- p3_2[muestra.pacientes,]
+muestra.p3.table <- table(muestra.p3[,c("DEFUNCION","fue_al_doctor")])
+muestra.p3.table
+
+test.chiq.4 <- chisq.test(muestra.p3.table)$residuals
+test.chiq.4
+#assocstats(muestra.p3.table) 
 
 
-hist(p3$SINT_INGR, breaks = 30)
+
 
 
 ## Calcular la tasa de positividad para la CDMX por alcaldia
