@@ -74,6 +74,9 @@ p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_
 
 mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
 
+png(filename = "./graficas/pregunta1.png", width = 960, height = 720, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(aes(linetype = rango_esp), size = 1.1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
@@ -90,7 +93,6 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             scale_linetype_manual(values = c("dashed", "solid"), guide = "none")+
             scale_color_manual(values = mycolors)
 
-dev.copy(png, file = "./graficas/pregunta1.png")
 dev.off()
 
 ## Pregunta 2
