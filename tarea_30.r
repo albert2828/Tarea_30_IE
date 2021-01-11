@@ -4,6 +4,10 @@ library(dplyr)
 source("extras.r")
 source("auxiliares.r")
 
+if (!dir.exists("graficas")){
+            dir.create("graficas")
+}
+
 my_filedate <- "210103" # format(Sys.Date(), "%y%m%d")
 # formato "yymmdd", es mejor probar con el día anterior
 
@@ -86,7 +90,7 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             scale_linetype_manual(values = c("dashed", "solid"), guide = "none")+
             scale_color_manual(values = mycolors)
 
-dev.copy(png, file="pregunta1.png")
+dev.copy(png, file = "./graficas/pregunta1.png")
 dev.off()
 
 ## Pregunta 2
@@ -116,7 +120,7 @@ p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
 
 p <- ggplot(p3i, aes(x=SINT_INGR))+
             geom_histogram()
-p + 
+p +  stat_bin(binwidth = 1, drop = FALSE, right = FALSE, col = "black")+
             labs(title = "Frequencia de días que tarda una persona en acudir a la clínica",
          x= "Número de días",
          y= "Frecuencia") +
@@ -124,18 +128,20 @@ p +
                   plot.title = element_text(size = 15))
 
 
-dev.copy(png, file="pregunta3_sintomas_ingreso.png")
+dev.copy(png, file="./graficas/pregunta3_sintomas_ingreso.png")
 dev.off()
 
 p <- ggplot(p3f, aes(x=SINT_FALLECE))+
-            geom_histogram()
-p + 
+            geom_bar()
+p + stat_count(geom = "bar")+
             labs(title = "Frequencia de días que tarda una persona en morir a partir de que tiene sìntomas",
                  x= "Número de días",
                  y= "Frecuencia") +
             theme(axis.title = element_text(size = 14),
                   plot.title = element_text(size = 15))
 
+dev.copy(png, file="./graficas/pregunta3_sintomas_fallecimiento.png")
+dev.off()
 
 
 lambda1 <- mean(p3i$SINT_INGR)
