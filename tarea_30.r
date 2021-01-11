@@ -166,10 +166,11 @@ muestra.p3 <- p3_2[muestra.pacientes,]
 muestra.p3.table <- table(muestra.p3[,c("DEFUNCION","fue_al_doctor")])
 muestra.p3.table
 
-test.chiq.7 <- chisq.test(muestra.p3.table)$residuals
+test.chiq.7 <- chisq.test(muestra.p3.table)
 test.chiq.7
 
 ## https://rpubs.com/Joaquin_AR/220579
+## https://en.m.wikipedia.org/wiki/Pearson%27s_chi-squared_test
 #library(vcd)
 #assocstats(muestra.p3.table) 
 
