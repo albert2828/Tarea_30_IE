@@ -220,3 +220,4 @@ p4 <- BD %>% select(ENTIDAD_RES ,MUNICIPIO_RES, TOMA_MUESTRA_LAB, RESULTADO_LAB)
 
 p4 <- p4[1:16,]
 p4$MUNICIPIO_RES <- alcaldias$MUNICIPIO
+print(xtable(p4, type = "latex"), file = "positividad_por_alcaldias_cdmx.tex")
