@@ -1,5 +1,7 @@
 library(ggplot2)
 library(dplyr)
+library(xtable)
+library(readxl)
 
 source("extras.r")
 source("auxiliares.r")
@@ -70,6 +72,10 @@ p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
 p1["Sexo_Edad"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
 p1$Sexo_Edad <- as.factor(p1$Sexo_Edad)
 p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_Edad == "M 60 +"
+
+## Esto es un ejemplo de cómo generar la tabla en latex
+## print(xtable(p1, type = "latex"), file = "prueba1.tex")
+
 
 mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
 
@@ -142,9 +148,8 @@ p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CAR
 tables <- list(NULL)
 
 for (i in 2:10) {
-            tables[[i-1]] <- table(filter(p2[,c(1, i)], !is.na(p2[,i])))
+            tables[[i-1]] <- table(p2$DEFUNCION, p2[,i])
 }
-
 
 
 ## Pregunta 3
@@ -153,11 +158,12 @@ p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION) %>%
             mutate(SINT_INGR = as.integer(FECHA_INGRESO - FECHA_SINTOMAS), 
                    SINT_FALLECE = as.integer(FECHA_DEF-FECHA_SINTOMAS))
 
-p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR) %>%
-            filter(SINT_INGR<16)
+## Revisar los outliers
+
+p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR)
 
 p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
-            filter(SINT_FALLECE<40, SINT_FALLECE>=0)
+            filter(SINT_FALLECE, SINT_FALLECE>=0)
 
 p <- ggplot(p3i, aes(x=SINT_INGR))+
             geom_histogram()
@@ -200,3 +206,17 @@ sdf <- sd(p3f$SINT_FALLECE)
 
 ## Calcular la tasa de positividad para la CDMX por alcaldia
 
+alcaldias <- read_excel("./diccionario_datos_covid19/Catalogos_071020.xlsx", sheet = "Catálogo MUNICIPIOS")
+alcaldias <- alcaldias[alcaldias$CLAVE_ENTIDAD == "09",]
+alcaldias <- alcaldias[1:16,1:2]
+alcaldias$CLAVE_MUNICIPIO <- as.integer(alcaldias$CLAVE_MUNICIPIO)
+
+p4 <- BD %>% select(ENTIDAD_RES ,MUNICIPIO_RES, TOMA_MUESTRA_LAB, RESULTADO_LAB) %>%
+            filter(ENTIDAD_RES == 9, TOMA_MUESTRA_LAB == 1) %>%
+            mutate(RESULTADO = 1*(RESULTADO_LAB==1)) %>%
+            group_by(MUNICIPIO_RES) %>%
+            summarize(num_casos = sum(TOMA_MUESTRA_LAB), num_positivos = sum(RESULTADO)) %>%
+            mutate(positividad = 100*num_positivos/num_casos)
+
+p4 <- p4[1:16,]
+p4$MUNICIPIO_RES <- alcaldias$MUNICIPIO
