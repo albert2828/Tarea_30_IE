@@ -8,7 +8,7 @@ if (!dir.exists("graficas")){
             dir.create("graficas")
 }
 
-my_filedate <- "210103" # format(Sys.Date(), "%y%m%d")
+my_filedate <-  "210117" # format(Sys.Date(), "%y%m%d")
 # formato "yymmdd", es mejor probar con el día anterior
 
 
@@ -17,9 +17,9 @@ tt # tiempo de lectura de la base
 # 33 seg cuando es local (se leyó del servidor anteriormente y quedó guardada)
 # 110 seg cuando se lee de la página de la SSA
 
-head(BD)
-str(BD)
-names(BD)
+#head(BD)
+#str(BD)
+#names(BD)
 
 
 ## Extraer solo las variables que nos interesan para los anális
@@ -61,7 +61,6 @@ tarea <- mutate(tarea, DEFUNCION = 1*(!is.na(tarea$FECHA_DEF)))
 
 ## Pregunta 1
 
-
 p1 <- tarea %>% filter(FECHA_DEF >= as.Date("2020-04-01"), ENTIDAD_RES == 9) %>%
             select(FECHA_SINTOMAS, FECHA_DEF, SEXO, RANGO_DE_EDAD, DEFUNCION) %>%
             group_by(FECHA_DEF, SEXO, RANGO_DE_EDAD) %>%
@@ -95,6 +94,46 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
 
 dev.off()
 
+## Analizamos cambios en la tendencia analizando los intervalos de confianza para la media antes y 
+## después de un tiempo t0.
+
+## Cambio en la tendencia en hombres mayores de 60 años.
+## El primer cambio de tendencia lo observamos el 22 de junio de 2020
+
+t0 <- as.Date("2020-06-22")
+t1 <- as.Date("2020-11-01")
+
+h.60.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 60 +")
+h.60.primer.tend <- h.60.primer.tend$NUM_DEF
+
+h.60.segunda.tend <- p1 %>% filter(FECHA_DEF>=t0, FECHA_DEF<t1, Sexo_Edad == "H 60 +")
+h.60.segunda.tend <- h.60.segunda.tend$NUM_DEF
+
+h.60.tercer.tend <-  p1 %>% filter(FECHA_DEF>=t1, Sexo_Edad == "H 60 +")
+h.60.tercer.tend <- h.60.tercer.tend$NUM_DEF
+
+## Hacemos boostrap para calcular los intervalos de confianza
+bootstap1 = replicate(n=1000, sample(h.60.primer.tend, replace = TRUE))
+
+media.muestral.1 <- apply(bootstap1, MARGIN = 2, FUN = mean)
+int.conf1 = quantile(media.muestral.1, probs = c(.025,.975))
+int.conf1
+
+bootstap2 = replicate(n=1000, sample(h.60.segunda.tend, replace = TRUE))
+
+media.muestral.2 <- apply(bootstap2, MARGIN = 2, FUN = mean)
+int.conf2 = quantile(media.muestral.2, probs = c(.025,.975))
+int.conf2
+
+bootstap3 = replicate(n=1000, sample(h.60.tercer.tend, replace = TRUE))
+
+media.muestral.3 <- apply(bootstap3, MARGIN = 2, FUN = mean)
+int.conf3 = quantile(media.muestral.3, probs = c(.025,.975))
+int.conf3
+
+## Aquí podría hacer una gráfica solo de la tendencia de muertes de personas del sexo masculino mayores de 60 años
+## y señalar los puntos de las tendencias utilizando annotate de ggplot2
+            
 ## Pregunta 2
 
 p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR,
@@ -115,10 +154,10 @@ p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION) %>%
                    SINT_FALLECE = as.integer(FECHA_DEF-FECHA_SINTOMAS))
 
 p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR) %>%
-            filter(SINT_INGR<20)
+            filter(SINT_INGR<16)
 
 p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
-            filter(SINT_FALLECE<40)
+            filter(SINT_FALLECE<40, SINT_FALLECE>=0)
 
 p <- ggplot(p3i, aes(x=SINT_INGR))+
             geom_histogram()
@@ -128,7 +167,6 @@ p +  stat_bin(binwidth = 1, drop = FALSE, right = FALSE, col = "black")+
          y= "Frecuencia") +
             theme(axis.title = element_text(size = 14),
                   plot.title = element_text(size = 15))
-
 
 dev.copy(png, file="./graficas/pregunta3_sintomas_ingreso.png")
 dev.off()
@@ -154,45 +192,7 @@ sdf <- sd(p3f$SINT_FALLECE)
 
 
 
-## Queremos saber sin mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
-p3_2 <- p3 %>% select(SINT_INGR, DEFUNCION) %>%
-            filter(SINT_INGR <= 20) %>%
-            mutate(fue_al_doctor = cut(SINT_INGR, breaks = c(-1,7,max(SINT_INGR)), 
-                                       labels = c("pronto","tarde")))
-
-## Extraemos una muestra para hacer el test chi^2
-set.seed(30)
-muestra.pacientes = sample(1:length(p3_2$SINT_INGR), 116757)
-
-muestra.p3 <- p3_2[muestra.pacientes,]
-muestra.p3.table <- table(muestra.p3[,c("DEFUNCION","fue_al_doctor")])
-muestra.p3.table
-
-test.chiq.7 <- chisq.test(muestra.p3.table)
-test.chiq.7
-
-## https://rpubs.com/Joaquin_AR/220579
-## https://en.m.wikipedia.org/wiki/Pearson%27s_chi-squared_test
-#library(vcd)
-#assocstats(muestra.p3.table) 
-
-
-## Parece haber una asociación entre tardar en ir al doctor y la probabilidad de fallecer
-
-## Hacemos lo mismo, pero cambiamos el break esta vez a 4
-
-p3_2 <- p3 %>% select(SINT_INGR, DEFUNCION) %>%
-            filter(SINT_INGR <= 20) %>%
-            mutate(fue_al_doctor = cut(SINT_INGR, breaks = c(-1,4,max(SINT_INGR)), 
-                                       labels = c("pronto","tarde")))
-
-muestra.p3 <- p3_2[muestra.pacientes,]
-muestra.p3.table <- table(muestra.p3[,c("DEFUNCION","fue_al_doctor")])
-muestra.p3.table
-
-test.chiq.4 <- chisq.test(muestra.p3.table)$residuals
-test.chiq.4
-#assocstats(muestra.p3.table) 
+## Queremos saber si mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 
 
 
