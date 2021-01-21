@@ -104,7 +104,7 @@ dev.off()
 ## después de un tiempo t0.
 
 ## Cambio en la tendencia en hombres mayores de 60 años.
-## El primer cambio de tendencia lo observamos el 22 de junio de 2020
+## El primer cambio de tendencia lo observamos alrededor del 22 de junio de 2020 y el segundo alrededor del primero de noviembre
 
 t0 <- as.Date("2020-06-22")
 t1 <- as.Date("2020-11-01")
@@ -122,24 +122,64 @@ h.60.tercer.tend <- h.60.tercer.tend$NUM_DEF
 bootstap1 = replicate(n=1000, sample(h.60.primer.tend, replace = TRUE))
 
 media.muestral.1 <- apply(bootstap1, MARGIN = 2, FUN = mean)
-int.conf1 = quantile(media.muestral.1, probs = c(.025,.975))
+## Como no conocemos la varianza, calculamos un quantil t con lenght(media.muestral.1)-1 grados de libertad
+t.975 = qt(.975, df = length(media.muestral.1)-1)
+int.conf1 = c(mean(media.muestral.1)-t.975*(sd(media.muestral.1)/sqrt(1000)),
+              mean(media.muestral.1)+t.975*(sd(media.muestral.1)/sqrt(1000)))
 int.conf1
 
 bootstap2 = replicate(n=1000, sample(h.60.segunda.tend, replace = TRUE))
 
 media.muestral.2 <- apply(bootstap2, MARGIN = 2, FUN = mean)
-int.conf2 = quantile(media.muestral.2, probs = c(.025,.975))
+int.conf2 = c(mean(media.muestral.2)-t.975*(sd(media.muestral.2)/sqrt(1000)),
+              mean(media.muestral.2)+t.975*(sd(media.muestral.2)/sqrt(1000)))
 int.conf2
 
 bootstap3 = replicate(n=1000, sample(h.60.tercer.tend, replace = TRUE))
 
 media.muestral.3 <- apply(bootstap3, MARGIN = 2, FUN = mean)
-int.conf3 = quantile(media.muestral.3, probs = c(.025,.975))
+int.conf3 = c(mean(media.muestral.3)-t.975*(sd(media.muestral.3)/sqrt(1000)),
+              mean(media.muestral.3)+t.975*(sd(media.muestral.3)/sqrt(1000)))
 int.conf3
 
 ## Aquí podría hacer una gráfica solo de la tendencia de muertes de personas del sexo masculino mayores de 60 años
 ## y señalar los puntos de las tendencias utilizando annotate de ggplot2
             
+## Cambios de tendencia en hombres de entre 40 y 60 años.
+## Igualmente el primer cambio lo observamos alrededor del 22 de junio y el segundo también alrededor del primero de noviembre
+
+h.40.59.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 40-59")
+h.40.59.primer.tend <- h.40.59.primer.tend$NUM_DEF
+
+h.40.59.segunda.tend <- p1 %>% filter(FECHA_DEF>=t0, FECHA_DEF<t1, Sexo_Edad == "H 40-59")
+h.40.59.segunda.tend <- h.40.59.segunda.tend$NUM_DEF
+
+h.40.59.tercer.tend <-  p1 %>% filter(FECHA_DEF>=t1, Sexo_Edad == "H 40-59")
+h.40.59.tercer.tend <- h.40.59.tercer.tend$NUM_DEF
+
+bootstap4 <- replicate(n=1000, sample(h.40.59.primer.tend, replace = T))
+media.muestral.4 <- apply(bootstap4, MARGIN = 2, FUN = mean)
+int.conf4 <- c(mean(media.muestral.4)-t.975*(sd(media.muestral.4)/sqrt(1000)),
+               mean(media.muestral.4)+t.975*(sd(media.muestral.4)/sqrt(1000)))
+int.conf4
+
+bootstap5 <- replicate(n=1000, sample(h.40.59.segunda.tend, replace = T))
+media.muestral.5 <- apply(bootstap5, MARGIN = 2, FUN = mean)
+int.conf5 <- c(mean(media.muestral.5)-t.975*(sd(media.muestral.5)/sqrt(1000)),
+               mean(media.muestral.5)+t.975*(sd(media.muestral.5)/sqrt(1000)))
+int.conf5
+
+bootstap6 <- replicate(n=1000, sample(h.40.59.tercer.tend, replace = T))
+media.muestral.6 <- apply(bootstap6, MARGIN = 2, FUN = mean)
+int.conf6 <- c(mean(media.muestral.6)-t.975*(sd(media.muestral.6)/sqrt(1000)),
+               mean(media.muestral.6)+t.975*(sd(media.muestral.6)/sqrt(1000)))
+int.conf6
+
+
+## Cambios de tendencia en mujeres mayores de 60 años
+m.60.primer tendencia
+
+
 ## Pregunta 2
 
 p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR,
@@ -221,3 +261,4 @@ p4 <- BD %>% select(ENTIDAD_RES ,MUNICIPIO_RES, TOMA_MUESTRA_LAB, RESULTADO_LAB)
 p4 <- p4[1:16,]
 p4$MUNICIPIO_RES <- alcaldias$MUNICIPIO
 print(xtable(p4, type = "latex"), file = "positividad_por_alcaldias_cdmx.tex")
+
