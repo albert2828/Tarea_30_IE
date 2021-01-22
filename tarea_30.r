@@ -79,14 +79,34 @@ p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_
 
 mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
 
-png(filename = "./graficas/pregunta1.png", width = 960, height = 720, units = "px", 
+png(filename = "./graficas/pregunta1_g1.png", width = 960, height = 720, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+
+p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_line(size = 1.1)
+p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Divido por sexo y rangos de edad",
+                 x = "Fecha",
+                 y= "Muertes",
+                 color = "Sexo_edad")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_color_manual(values = mycolors)
+
+dev.off()
+
+png(filename = "./graficas/pregunta1_g2.png", width = 960, height = 720, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(aes(linetype = rango_esp), size = 1.1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
-                 subtitle = "Divido por sexo y rangos de edad",
+                 subtitle = "Divido por sexo y rangos de edad. Tres grupos resaltados",
                  x = "Fecha",
                  y= "Muertes",
                  color = "Sexo_edad")+
@@ -99,6 +119,7 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             scale_color_manual(values = mycolors)
 
 dev.off()
+
 
 ## Analizamos cambios en la tendencia analizando los intervalos de confianza para la media antes y 
 ## después de un tiempo t0.
