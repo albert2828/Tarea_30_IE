@@ -103,11 +103,14 @@ dev.off()
 ## Analizamos cambios en la tendencia analizando los intervalos de confianza para la media antes y 
 ## después de un tiempo t0.
 
-## Cambio en la tendencia en hombres mayores de 60 años.
-## El primer cambio de tendencia lo observamos alrededor del 22 de junio de 2020 y el segundo alrededor del primero de noviembre
+## Faltan hacer tres o cuatro gráficas (el ideal sería una gráfica dinámica)
 
-t0 <- as.Date("2020-06-22")
-t1 <- as.Date("2020-11-01")
+
+## Cambio en la tendencia en hombres mayores de 60 años.
+## El primer cambio de tendencia lo observamos alrededor del 5 de junio de 2020 y el segundo alrededor del 26 de octubre
+
+t0 <- as.Date("2020-06-01")
+t1 <- as.Date("2020-10-26")
 
 h.60.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 60 +")
 h.60.primer.tend <- h.60.primer.tend$NUM_DEF
@@ -146,7 +149,10 @@ int.conf3
 ## y señalar los puntos de las tendencias utilizando annotate de ggplot2
             
 ## Cambios de tendencia en hombres de entre 40 y 60 años.
-## Igualmente el primer cambio lo observamos alrededor del 22 de junio y el segundo también alrededor del primero de noviembre
+## Igualmente el primer cambio lo observamos alrededor del 18 de mayo y el segundo alrededor del primero de noviembre
+
+t0 <- as.Date("2020-05-18")
+t1 <- as.Date("2020-11-16")
 
 h.40.59.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 40-59")
 h.40.59.primer.tend <- h.40.59.primer.tend$NUM_DEF
@@ -177,7 +183,87 @@ int.conf6
 
 
 ## Cambios de tendencia en mujeres mayores de 60 años
-m.60.primer tendencia
+## El primer cambio de tendencia lo observamos alrededor del 25 de mayo y el segundo alrededor del 26 de octubre
+t0 = as.Date("2020-05-25")
+t1 = as.Date("2020-10-26")
+
+m.60.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "M 60 +")
+m.60.primer.tend <- m.60.primer.tend$NUM_DEF
+
+m.60.segunda.tend <- p1 %>% filter(FECHA_DEF>=t0, FECHA_DEF<t1, Sexo_Edad == "M 60 +")
+m.60.segunda.tend <- m.60.segunda.tend$NUM_DEF
+
+m.60.tercer.tend <- p1 %>% filter(FECHA_DEF>t1, Sexo_Edad == "M 60 +")
+m.60.tercer.tend <- m.60.tercer.tend$NUM_DEF
+
+bootstap7 <- replicate(n=1000, sample(m.60.primer.tend, replace =T))
+media.muestral.7 <- apply(bootstap7, MARGIN = 2, FUN = mean)
+int.conf7 <- c(mean(media.muestral.7)-t.975*(sd(media.muestral.7)/sqrt(1000)),
+               mean(media.muestral.7)+t.975*(sd(media.muestral.7)/sqrt(1000)))
+int.conf7
+
+bootstap8 <- replicate(n=1000, sample(m.60.segunda.tend, replace =T))
+media.muestral.8 <- apply(bootstap8, MARGIN = 2, FUN = mean)
+int.conf8 <- c(mean(media.muestral.8)-t.975*(sd(media.muestral.8)/sqrt(1000)),
+               mean(media.muestral.8)+t.975*(sd(media.muestral.8)/sqrt(1000)))
+int.conf8
+
+bootstap9 <- replicate(n=1000, sample(m.60.tercer.tend, replace =T))
+media.muestral.9 <- apply(bootstap9, MARGIN = 2, FUN = mean)
+int.conf9 <- c(mean(media.muestral.9)-t.975*(sd(media.muestral.9)/sqrt(1000)),
+               mean(media.muestral.9)+t.975*(sd(media.muestral.9)/sqrt(1000)))
+int.conf9
+
+## Además, observamos que hay un cambio entre las tendencias de muertes de hombres de entre 40 y 59 años
+## y mujeres de más de 60 años alrededor del 13 de julio
+
+t0 <- as.Date("2020-07-20")
+
+h.40.59.tend.mayor <- p1 %>% filter(FECHA_DEF<=t0, Sexo_Edad == "H 40-59")
+h.40.59.tend.mayor <- h.40.59.tend.mayor$NUM_DEF
+
+h.40.59.tend.menor <- p1 %>% filter(FECHA_DEF>t0, Sexo_Edad == "H 40-59")
+h.40.59.tend.menor <- h.40.59.tend.menor$NUM_DEF
+
+m.60.tend.menor <- p1 %>% filter(FECHA_DEF<=t0, Sexo_Edad == "M 60 +")
+m.60.tend.menor <- m.60.tend.menor$NUM_DEF
+
+m.60.tend.mayor <- p1 %>% filter(FECHA_DEF>t0, Sexo_Edad == "M 60 +")
+m.60.tend.mayor <- m.60.tend.mayor$NUM_DEF
+
+bootstap10 <- replicate(n=1000, sample(h.40.59.tend.mayor, replace = T))
+media.muestral.10 <- apply(bootstap10, MARGIN = 2, FUN = mean)
+int.conf10 <- c(mean(media.muestral.10)-t.975*(sd(media.muestral.10)/sqrt(1000)),
+               mean(media.muestral.10)+t.975*(sd(media.muestral.10)/sqrt(1000)))
+## Intervalo del 95% de confianza de la media de fallecimientos de hombres de entre 40 y 59 años de edad
+## antes del 20 de julio
+int.conf10
+
+bootstap11 <- replicate(n=1000, sample(m.60.tend.menor, replace = T))
+media.muestral.11 <- apply(bootstap11, MARGIN = 2, FUN = mean)
+int.conf11 <- c(mean(media.muestral.11)-t.975*(sd(media.muestral.11)/sqrt(1000)),
+                mean(media.muestral.11)+t.975*(sd(media.muestral.11)/sqrt(1000)))
+## Intervalo del 95% de confianza de la media de fallecimientos de mujeres mayores de 60 años de edad
+## antes del 20 de julio
+int.conf11
+
+bootstap12 <- replicate(n=1000, sample(h.40.59.tend.menor, replace = T))
+media.muestral.12 <- apply(bootstap12, MARGIN = 2, FUN = mean)
+int.conf12 <- c(mean(media.muestral.12)-t.975*(sd(media.muestral.12)/sqrt(1000)),
+                mean(media.muestral.12)+t.975*(sd(media.muestral.12)/sqrt(1000)))
+## Intervalo del 95% de confanza de la media de fallecimientos de hombres de entre 40 y 59 años de edad
+## después del 20 de julio
+int.conf12
+
+bootstap13 <- replicate(n=1000, sample(m.60.tend.mayor, replace = T))
+media.muestral.13 <- apply(bootstap13, MARGIN = 2, FUN = mean)
+int.conf13 <- c(mean(media.muestral.13)-t.975*(sd(media.muestral.13)/sqrt(1000)),
+                mean(media.muestral.13)+t.975*(sd(media.muestral.13)/sqrt(1000)))
+## Intervalo del 95% de confianza de la media de fallecimientos de mujeres mayores de 60 años de edad
+## después del 20 de julio
+int.conf13
+
+## La evidencia sugiera que a partir de esta fecha, realmente hay un cambio en la tendencia de muertes
 
 
 ## Pregunta 2
@@ -249,7 +335,7 @@ sdf <- sd(p3f$SINT_FALLECE)
 alcaldias <- read_excel("./diccionario_datos_covid19/Catalogos_071020.xlsx", sheet = "Catálogo MUNICIPIOS")
 alcaldias <- alcaldias[alcaldias$CLAVE_ENTIDAD == "09",]
 alcaldias <- alcaldias[1:16,1:2]
-alcaldias$CLAVE_MUNICIPIO <- as.integer(alcaldias$CLAVE_MUNICIPIO)
+
 
 p4 <- BD %>% select(ENTIDAD_RES ,MUNICIPIO_RES, TOMA_MUESTRA_LAB, RESULTADO_LAB) %>%
             filter(ENTIDAD_RES == 9, TOMA_MUESTRA_LAB == 1) %>%
