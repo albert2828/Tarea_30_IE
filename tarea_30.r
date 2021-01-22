@@ -73,9 +73,6 @@ p1["Sexo_Edad"] <- paste(p1$SEXO, p1$RANGO_DE_EDAD, sep= " ")
 p1$Sexo_Edad <- as.factor(p1$Sexo_Edad)
 p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_Edad == "M 60 +"
 
-## Esto es un ejemplo de cómo generar la tabla en latex
-## print(xtable(p1, type = "latex"), file = "prueba1.tex")
-
 
 mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
 
@@ -83,7 +80,7 @@ png(filename = "./graficas/pregunta1_g1.png", width = 960, height = 720, units =
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
-            geom_line(size = 1.1)
+            geom_line(size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad",
@@ -103,7 +100,7 @@ png(filename = "./graficas/pregunta1_g2.png", width = 960, height = 720, units =
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
-            geom_line(aes(linetype = rango_esp), size = 1.1)
+            geom_line(aes(linetype = rango_esp), size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad. Tres grupos resaltados",
@@ -124,14 +121,11 @@ dev.off()
 ## Analizamos cambios en la tendencia analizando los intervalos de confianza para la media antes y 
 ## después de un tiempo t0.
 
-## Faltan hacer tres o cuatro gráficas (el ideal sería una gráfica dinámica)
-
-
 ## Cambio en la tendencia en hombres mayores de 60 años.
-## El primer cambio de tendencia lo observamos alrededor del 5 de junio de 2020 y el segundo alrededor del 26 de octubre
+## El primer cambio de tendencia lo observamos alrededor del 15 de junio de 2020 y el segundo alrededor del 28 de septiembre
 
-t0 <- as.Date("2020-06-01")
-t1 <- as.Date("2020-10-26")
+t0 <- as.Date("2020-06-15")
+t1 <- as.Date("2020-09-28")
 
 h.60.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 60 +")
 h.60.primer.tend <- h.60.primer.tend$NUM_DEF
@@ -166,14 +160,37 @@ int.conf3 = c(mean(media.muestral.3)-t.975*(sd(media.muestral.3)/sqrt(1000)),
               mean(media.muestral.3)+t.975*(sd(media.muestral.3)/sqrt(1000)))
 int.conf3
 
-## Aquí podría hacer una gráfica solo de la tendencia de muertes de personas del sexo masculino mayores de 60 años
-## y señalar los puntos de las tendencias utilizando annotate de ggplot2
+## Gráfica con los cambios de tendencias
+png(filename = "./graficas/pregunta1_g3.png", width = 540, height = 480, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+p1 %>% filter(Sexo_Edad == "H 60 +") %>%
+            ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_line(size = 1)+
+            geom_smooth()+
+            scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Hombres mayores de 60 años",
+                 x = "Fecha",
+                 y= "Muertes")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_color_manual(values = "#ad2121", guide = "none")+
+            annotate(geom = "curve", x=as.Date("2020-07-05"), y= 50, xend = as.Date("2020-06-15"),
+                     yend = 47, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-07-06"), y=50, label="Primer cambio", hjust = "left")+
+            annotate(geom = "curve", x=as.Date("2020-10-06"), y= 28, xend = as.Date("2020-09-28"),
+                     yend = 18, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-10-07"), y=28, label="Segundo cambio", hjust = "left")
+dev.off()
             
 ## Cambios de tendencia en hombres de entre 40 y 60 años.
-## Igualmente el primer cambio lo observamos alrededor del 18 de mayo y el segundo alrededor del primero de noviembre
+## Igualmente el primer cambio lo observamos alrededor del 15 de junio y el segundo alrededor del 12 de octubre
 
-t0 <- as.Date("2020-05-18")
-t1 <- as.Date("2020-11-16")
+t0 <- as.Date("2020-06-15")
+t1 <- as.Date("2020-10-12")
 
 h.40.59.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "H 40-59")
 h.40.59.primer.tend <- h.40.59.primer.tend$NUM_DEF
@@ -202,11 +219,37 @@ int.conf6 <- c(mean(media.muestral.6)-t.975*(sd(media.muestral.6)/sqrt(1000)),
                mean(media.muestral.6)+t.975*(sd(media.muestral.6)/sqrt(1000)))
 int.conf6
 
+## Gráfica con los cambios de tendencias
+png(filename = "./graficas/pregunta1_g4.png", width = 540, height = 480, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+p1 %>% filter(Sexo_Edad == "H 40-59") %>%
+            ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_line(size = 1)+
+            geom_smooth()+
+            scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Hombres de entre 40 y 59 años",
+                 x = "Fecha",
+                 y= "Muertes")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_color_manual(values = "#cbd11f", guide = "none")+
+            annotate(geom = "curve", x=as.Date("2020-07-05"), y= 30, xend = as.Date("2020-06-15"),
+                     yend = 24, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-07-06"), y=30, label="Primer cambio", hjust = "left")+
+            annotate(geom = "curve", x=as.Date("2020-10-18"), y= 15, xend = as.Date("2020-10-12"),
+                     yend = 8, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-10-18"), y=16, label="Segundo cambio", hjust = "left")
+dev.off()
+
 
 ## Cambios de tendencia en mujeres mayores de 60 años
-## El primer cambio de tendencia lo observamos alrededor del 25 de mayo y el segundo alrededor del 26 de octubre
-t0 = as.Date("2020-05-25")
-t1 = as.Date("2020-10-26")
+## El primer cambio de tendencia lo observamos alrededor del 20 de junio y el segundo alrededor del 28 de septiembre
+t0 = as.Date("2020-06-20")
+t1 = as.Date("2020-09-28")
 
 m.60.primer.tend <- p1 %>% filter(FECHA_DEF<t0, Sexo_Edad == "M 60 +")
 m.60.primer.tend <- m.60.primer.tend$NUM_DEF
@@ -235,10 +278,36 @@ int.conf9 <- c(mean(media.muestral.9)-t.975*(sd(media.muestral.9)/sqrt(1000)),
                mean(media.muestral.9)+t.975*(sd(media.muestral.9)/sqrt(1000)))
 int.conf9
 
-## Además, observamos que hay un cambio entre las tendencias de muertes de hombres de entre 40 y 59 años
-## y mujeres de más de 60 años alrededor del 13 de julio
+## Gráfica con los cambios de tendencias
+png(filename = "./graficas/pregunta1_g5.png", width = 540, height = 480, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+p1 %>% filter(Sexo_Edad == "M 60 +") %>%
+            ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_line(size = 1)+
+            geom_smooth()+
+            scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Mujeres mayores de 60 años",
+                 x = "Fecha",
+                 y= "Muertes")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_color_manual(values = "#04b09f", guide = "none")+
+            annotate(geom = "curve", x=as.Date("2020-07-10"), y= 20, xend = as.Date("2020-06-20"),
+                     yend = 16, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-07-06"), y=20, label="Primer cambio", hjust = "left")+
+            annotate(geom = "curve", x=as.Date("2020-10-05"), y= 15, xend = as.Date("2020-09-28"),
+                     yend = 11, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-10-06"), y=15, label="Segundo cambio", hjust = "left")
+dev.off()
 
-t0 <- as.Date("2020-07-20")
+## Además, observamos que hay un cambio entre las tendencias de muertes de hombres de entre 40 y 59 años
+## y mujeres de más de 60 años alrededor del 12 de julio
+
+t0 <- as.Date("2020-07-12")
 
 h.40.59.tend.mayor <- p1 %>% filter(FECHA_DEF<=t0, Sexo_Edad == "H 40-59")
 h.40.59.tend.mayor <- h.40.59.tend.mayor$NUM_DEF
@@ -285,6 +354,29 @@ int.conf13 <- c(mean(media.muestral.13)-t.975*(sd(media.muestral.13)/sqrt(1000))
 int.conf13
 
 ## La evidencia sugiera que a partir de esta fecha, realmente hay un cambio en la tendencia de muertes
+
+## Gráfica con los cambios de tendencias
+png(filename = "./graficas/pregunta1_g6.png", width = 580, height = 480, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+p1 %>% filter(Sexo_Edad == "M 60 +" | Sexo_Edad == "H 40-59") %>%
+            ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
+            geom_smooth()+
+            geom_line(size = 1)+
+            scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+                 subtitle = "Hombres de entre 40 y 59 años y mujeres mayores de 60 años",
+                 x = "Fecha",
+                 y= "Muertes")+
+            theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                  legend.text = element_text(size = 14),
+                  axis.title = element_text(size = 14),
+                  plot.title = element_text(size = 20),
+                  plot.subtitle = element_text(size = 16))+
+            scale_color_manual(values = c("#cbd11f","#04b09f"))+
+            annotate(geom = "curve", x=as.Date("2020-07-20"), y= 20, xend = as.Date("2020-07-12"),
+                     yend = 14, arrow= arrow(length = unit(4, "mm")))+
+            annotate(geom = "text", x=as.Date("2020-07-20"), y=20, label="Cambio de tendencias", hjust = "left")
+dev.off()
 
 
 ## Pregunta 2
