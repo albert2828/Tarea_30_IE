@@ -390,6 +390,7 @@ for (i in 2:10) {
             tables[[i-1]] <- table(p2$DEFUNCION, p2[,i])
 }
 
+
 x <- seq(0.001,.999, by = 0.001)
 
 betas <- list(NULL)
@@ -407,8 +408,19 @@ for (i in 2:9) {
         df_betas <- rbind(df_betas, betas[[i]])
 }
 
+
 df_betas %>% ggplot(aes(x=x, y=dist, colour = comorbilidad))+
     geom_line(size=2)
+
+medias <- c(NULL)
+for (i in 1:9){
+    a = tables[[i]][1,2]
+    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2]
+    medias[i] = a/(a+b)
+}
+
+medias = data.frame(comorbilidades, medias)
+medias
 
 ## Pregunta 3
 
