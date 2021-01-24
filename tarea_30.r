@@ -390,6 +390,25 @@ for (i in 2:10) {
             tables[[i-1]] <- table(p2$DEFUNCION, p2[,i])
 }
 
+x <- seq(0.001,.999, by = 0.001)
+
+betas <- list(NULL)
+comorbilidades <- names(p2[,2:10])
+for (i in 2:10){
+            a = tables[[i-1]][1,2]
+            b = tables[[i-1]][1,1] + tables[[i-1]][2,1] + tables[[i-1]][2,2]
+            betas[[i-1]] <- data.frame(x, dist = dbeta(x, shape1 = a, shape2 = b), 
+                                       comorbilidad = rep(comorbilidades[i-1], times = length(x)))
+}
+
+df_betas <- betas[[1]]
+
+for (i in 2:9) {
+        df_betas <- rbind(df_betas, betas[[i]])
+}
+
+df_betas %>% ggplot(aes(x=x, y=dist, colour = comorbilidad))+
+    geom_line(size=2)
 
 ## Pregunta 3
 
