@@ -2,6 +2,8 @@ library(ggplot2)
 library(dplyr)
 library(xtable)
 library(readxl)
+library(grid)
+library(gridExtra)
 
 source("extras.r")
 source("auxiliares.r")
@@ -378,6 +380,10 @@ p1 %>% filter(Sexo_Edad == "M 60 +" | Sexo_Edad == "H 40-59") %>%
             annotate(geom = "text", x=as.Date("2020-07-20"), y=20, label="Cambio de tendencias", hjust = "left")
 dev.off()
 
+png(filename = "./graficas/pregunta1_g7.png", width = 720, height = 720, units = "px",
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+grid.arrange(g1,g2,g3,g4)
+dev.off()
 
 ## Pregunta 2
 
@@ -412,15 +418,31 @@ for (i in 2:9) {
 df_betas %>% ggplot(aes(x=x, y=dist, colour = comorbilidad))+
     geom_line(size=2)
 
-medias <- c(NULL)
+Ebetas <- c(NULL)
 for (i in 1:9){
     a = tables[[i]][1,2]
     b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2]
-    medias[i] = a/(a+b)
+    Ebetas[i] = a/(a+b)
 }
 
-medias = data.frame(comorbilidades, medias)
-medias
+Ebetas = data.frame(comorbilidades, Esperanza = Ebetas)
+Ebetas <- Ebetas %>% arrange(desc(Esperanza))
+Ebetas
+print(xtable(Ebetas, type = "latex"), file = "probabilidad_comorbilidades.tex")
+
+Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Esperanza), y=Esperanza))+
+    geom_bar(stat = "identity", color="black", fill=rgb(.3,0.2,0.5,0.7) )+
+    labs(title="Valor esperado de la probabilidad de fallecer por comorbilidad",
+         x="Comorbilidad",
+         y="Probabilidad de fallecimiento")+
+    theme(axis.text.x = element_text(angle = 20, hjust = 1),
+          legend.text = element_text(size = 14),
+          axis.title = element_text(size = 14),
+          plot.title = element_text(size = 20),
+          plot.subtitle = element_text(size = 16))
+
+
+## Investigar el porcentaje de la población que tiene cada comorbilidad
 
 ## Pregunta 3
 
