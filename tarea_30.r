@@ -142,24 +142,19 @@ h.60.tercer.tend <- h.60.tercer.tend$NUM_DEF
 bootstap1 = replicate(n=1000, sample(h.60.primer.tend, replace = TRUE))
 
 media.muestral.1 <- apply(bootstap1, MARGIN = 2, FUN = mean)
-## Como no conocemos la varianza, calculamos un quantil t con lenght(media.muestral.1)-1 grados de libertad
-t.975 = qt(.975, df = length(media.muestral.1)-1)
-int.conf1 = c(mean(media.muestral.1)-t.975*(sd(media.muestral.1)/sqrt(1000)),
-              mean(media.muestral.1)+t.975*(sd(media.muestral.1)/sqrt(1000)))
+int.conf1 = quantile(media.muestral.1, probs = c(.025,.975))
 int.conf1
 
 bootstap2 = replicate(n=1000, sample(h.60.segunda.tend, replace = TRUE))
 
 media.muestral.2 <- apply(bootstap2, MARGIN = 2, FUN = mean)
-int.conf2 = c(mean(media.muestral.2)-t.975*(sd(media.muestral.2)/sqrt(1000)),
-              mean(media.muestral.2)+t.975*(sd(media.muestral.2)/sqrt(1000)))
+int.conf2 = quantile(media.muestral.2, probs = c(.025,.975))
 int.conf2
 
 bootstap3 = replicate(n=1000, sample(h.60.tercer.tend, replace = TRUE))
 
 media.muestral.3 <- apply(bootstap3, MARGIN = 2, FUN = mean)
-int.conf3 = c(mean(media.muestral.3)-t.975*(sd(media.muestral.3)/sqrt(1000)),
-              mean(media.muestral.3)+t.975*(sd(media.muestral.3)/sqrt(1000)))
+int.conf3 = quantile(media.muestral.3, probs = c(.025,.975))
 int.conf3
 
 ## Gráfica con los cambios de tendencias
@@ -205,20 +200,17 @@ h.40.59.tercer.tend <- h.40.59.tercer.tend$NUM_DEF
 
 bootstap4 <- replicate(n=1000, sample(h.40.59.primer.tend, replace = T))
 media.muestral.4 <- apply(bootstap4, MARGIN = 2, FUN = mean)
-int.conf4 <- c(mean(media.muestral.4)-t.975*(sd(media.muestral.4)/sqrt(1000)),
-               mean(media.muestral.4)+t.975*(sd(media.muestral.4)/sqrt(1000)))
+int.conf4 <- quantile(media.muestral.4, probs = c(.025,.975))
 int.conf4
 
 bootstap5 <- replicate(n=1000, sample(h.40.59.segunda.tend, replace = T))
 media.muestral.5 <- apply(bootstap5, MARGIN = 2, FUN = mean)
-int.conf5 <- c(mean(media.muestral.5)-t.975*(sd(media.muestral.5)/sqrt(1000)),
-               mean(media.muestral.5)+t.975*(sd(media.muestral.5)/sqrt(1000)))
+int.conf5 <- quantile(media.muestral.5, probs = c(.025,.975))
 int.conf5
 
 bootstap6 <- replicate(n=1000, sample(h.40.59.tercer.tend, replace = T))
 media.muestral.6 <- apply(bootstap6, MARGIN = 2, FUN = mean)
-int.conf6 <- c(mean(media.muestral.6)-t.975*(sd(media.muestral.6)/sqrt(1000)),
-               mean(media.muestral.6)+t.975*(sd(media.muestral.6)/sqrt(1000)))
+int.conf6 <- quantile(media.muestral.6, probs = c(.025,.975))
 int.conf6
 
 ## Gráfica con los cambios de tendencias
@@ -264,20 +256,17 @@ m.60.tercer.tend <- m.60.tercer.tend$NUM_DEF
 
 bootstap7 <- replicate(n=1000, sample(m.60.primer.tend, replace =T))
 media.muestral.7 <- apply(bootstap7, MARGIN = 2, FUN = mean)
-int.conf7 <- c(mean(media.muestral.7)-t.975*(sd(media.muestral.7)/sqrt(1000)),
-               mean(media.muestral.7)+t.975*(sd(media.muestral.7)/sqrt(1000)))
+int.conf7 <- quantile(media.muestral.7, probs = c(.025,.975))
 int.conf7
 
 bootstap8 <- replicate(n=1000, sample(m.60.segunda.tend, replace =T))
 media.muestral.8 <- apply(bootstap8, MARGIN = 2, FUN = mean)
-int.conf8 <- c(mean(media.muestral.8)-t.975*(sd(media.muestral.8)/sqrt(1000)),
-               mean(media.muestral.8)+t.975*(sd(media.muestral.8)/sqrt(1000)))
+int.conf8 <- quantile(media.muestral.8, probs = c(.025,.975))
 int.conf8
 
 bootstap9 <- replicate(n=1000, sample(m.60.tercer.tend, replace =T))
 media.muestral.9 <- apply(bootstap9, MARGIN = 2, FUN = mean)
-int.conf9 <- c(mean(media.muestral.9)-t.975*(sd(media.muestral.9)/sqrt(1000)),
-               mean(media.muestral.9)+t.975*(sd(media.muestral.9)/sqrt(1000)))
+int.conf9 <- quantile(media.muestral.9, probs = c(.025,.975))
 int.conf9
 
 ## Gráfica con los cambios de tendencias
@@ -333,24 +322,21 @@ int.conf10
 
 bootstap11 <- replicate(n=1000, sample(m.60.tend.menor, replace = T))
 media.muestral.11 <- apply(bootstap11, MARGIN = 2, FUN = mean)
-int.conf11 <- c(mean(media.muestral.11)-t.975*(sd(media.muestral.11)/sqrt(1000)),
-                mean(media.muestral.11)+t.975*(sd(media.muestral.11)/sqrt(1000)))
+int.conf11 <- quantile(media.muestral.11, probs = c(.025,.975))
 ## Intervalo del 95% de confianza de la media de fallecimientos de mujeres mayores de 60 años de edad
 ## antes del 20 de julio
 int.conf11
 
 bootstap12 <- replicate(n=1000, sample(h.40.59.tend.menor, replace = T))
 media.muestral.12 <- apply(bootstap12, MARGIN = 2, FUN = mean)
-int.conf12 <- c(mean(media.muestral.12)-t.975*(sd(media.muestral.12)/sqrt(1000)),
-                mean(media.muestral.12)+t.975*(sd(media.muestral.12)/sqrt(1000)))
+int.conf12 <- quantile(media.muestral.12, probs = c(.025,.975))
 ## Intervalo del 95% de confanza de la media de fallecimientos de hombres de entre 40 y 59 años de edad
 ## después del 20 de julio
 int.conf12
 
 bootstap13 <- replicate(n=1000, sample(m.60.tend.mayor, replace = T))
 media.muestral.13 <- apply(bootstap13, MARGIN = 2, FUN = mean)
-int.conf13 <- c(mean(media.muestral.13)-t.975*(sd(media.muestral.13)/sqrt(1000)),
-                mean(media.muestral.13)+t.975*(sd(media.muestral.13)/sqrt(1000)))
+int.conf13 <- quantile(media.muestral.13, probs = c(.025,.975))
 ## Intervalo del 95% de confianza de la media de fallecimientos de mujeres mayores de 60 años de edad
 ## después del 20 de julio
 int.conf13
