@@ -5,6 +5,7 @@ library(readxl)
 library(grid)
 library(gridExtra)
 
+
 source("extras.r")
 source("auxiliares.r")
 
@@ -78,12 +79,13 @@ p1$rango_esp <-  p1$Sexo_Edad == "H 40-59" | p1$Sexo_Edad == "H 60 +" | p1$Sexo_
 
 mycolors <- c("#1a277d", "#6c289c", "#cbd11f", "#ad2121", "#960c89", "#d1611b", "#1f3b1d", "#04b09f")
 
-png(filename = "./graficas/pregunta1_g1.png", width = 960, height = 720, units = "px", 
+png(filename = "./graficas/pregunta1_g1.png", width = 560, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+    theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad",
                  x = "Fecha",
@@ -98,12 +100,13 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
 
 dev.off()
 
-png(filename = "./graficas/pregunta1_g2.png", width = 960, height = 720, units = "px", 
+png(filename = "./graficas/pregunta1_g2.png", width = 560, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 
 p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(aes(linetype = rango_esp), size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad. Tres grupos resaltados",
                  x = "Fecha",
@@ -158,13 +161,14 @@ int.conf3 = quantile(media.muestral.3, probs = c(.025,.975))
 int.conf3
 
 ## Gráfica con los cambios de tendencias
-png(filename = "./graficas/pregunta1_g3.png", width = 540, height = 480, units = "px", 
+png(filename = "./graficas/pregunta1_g3.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 p1 %>% filter(Sexo_Edad == "H 60 +") %>%
             ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(size = 1)+
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres mayores de 60 años",
                  x = "Fecha",
@@ -172,7 +176,7 @@ p1 %>% filter(Sexo_Edad == "H 60 +") %>%
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_color_manual(values = "#ad2121", guide = "none")+
             annotate(geom = "curve", x=as.Date("2020-07-05"), y= 50, xend = as.Date("2020-06-15"),
@@ -214,13 +218,14 @@ int.conf6 <- quantile(media.muestral.6, probs = c(.025,.975))
 int.conf6
 
 ## Gráfica con los cambios de tendencias
-png(filename = "./graficas/pregunta1_g4.png", width = 540, height = 480, units = "px", 
+png(filename = "./graficas/pregunta1_g4.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 p1 %>% filter(Sexo_Edad == "H 40-59") %>%
             ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(size = 1)+
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres de entre 40 y 59 años",
                  x = "Fecha",
@@ -228,7 +233,7 @@ p1 %>% filter(Sexo_Edad == "H 40-59") %>%
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_color_manual(values = "#cbd11f", guide = "none")+
             annotate(geom = "curve", x=as.Date("2020-07-05"), y= 30, xend = as.Date("2020-06-15"),
@@ -270,13 +275,14 @@ int.conf9 <- quantile(media.muestral.9, probs = c(.025,.975))
 int.conf9
 
 ## Gráfica con los cambios de tendencias
-png(filename = "./graficas/pregunta1_g5.png", width = 540, height = 480, units = "px", 
+png(filename = "./graficas/pregunta1_g5.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 p1 %>% filter(Sexo_Edad == "M 60 +") %>%
             ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(size = 1)+
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Mujeres mayores de 60 años",
                  x = "Fecha",
@@ -284,7 +290,7 @@ p1 %>% filter(Sexo_Edad == "M 60 +") %>%
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_color_manual(values = "#04b09f", guide = "none")+
             annotate(geom = "curve", x=as.Date("2020-07-10"), y= 20, xend = as.Date("2020-06-20"),
@@ -314,8 +320,7 @@ m.60.tend.mayor <- m.60.tend.mayor$NUM_DEF
 
 bootstap10 <- replicate(n=1000, sample(h.40.59.tend.mayor, replace = T))
 media.muestral.10 <- apply(bootstap10, MARGIN = 2, FUN = mean)
-int.conf10 <- c(mean(media.muestral.10)-t.975*(sd(media.muestral.10)/sqrt(1000)),
-               mean(media.muestral.10)+t.975*(sd(media.muestral.10)/sqrt(1000)))
+int.conf10 <- quantile(media.muestral.10, probs = c(.025,.975))
 ## Intervalo del 95% de confianza de la media de fallecimientos de hombres de entre 40 y 59 años de edad
 ## antes del 20 de julio
 int.conf10
@@ -344,13 +349,14 @@ int.conf13
 ## La evidencia sugiera que a partir de esta fecha, realmente hay un cambio en la tendencia de muertes
 
 ## Gráfica con los cambios de tendencias
-png(filename = "./graficas/pregunta1_g6.png", width = 580, height = 480, units = "px", 
+png(filename = "./graficas/pregunta1_g6.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 p1 %>% filter(Sexo_Edad == "M 60 +" | Sexo_Edad == "H 40-59") %>%
             ggplot(aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_smooth()+
             geom_line(size = 1)+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
+            theme_bw()+
             labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres de entre 40 y 59 años y mujeres mayores de 60 años",
                  x = "Fecha",
@@ -358,17 +364,12 @@ p1 %>% filter(Sexo_Edad == "M 60 +" | Sexo_Edad == "H 40-59") %>%
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_color_manual(values = c("#cbd11f","#04b09f"))+
             annotate(geom = "curve", x=as.Date("2020-07-20"), y= 20, xend = as.Date("2020-07-12"),
                      yend = 14, arrow= arrow(length = unit(4, "mm")))+
             annotate(geom = "text", x=as.Date("2020-07-20"), y=20, label="Cambio de tendencias", hjust = "left")
-dev.off()
-
-png(filename = "./graficas/pregunta1_g7.png", width = 720, height = 720, units = "px",
-    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
-grid.arrange(g1,g2,g3,g4)
 dev.off()
 
 ## Pregunta 2
@@ -406,8 +407,8 @@ df_betas %>% ggplot(aes(x=x, y=dist, colour = comorbilidad))+
 
 Ebetas <- c(NULL)
 for (i in 1:9){
-    a = tables[[i]][1,2]
-    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2]
+    a = tables[[i]][1,2] + 1/2
+    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2] + 3/2
     Ebetas[i] = a/(a+b)
 }
 
@@ -416,9 +417,12 @@ Ebetas <- Ebetas %>% arrange(desc(Esperanza))
 Ebetas
 print(xtable(Ebetas, type = "latex"), file = "probabilidad_comorbilidades.tex")
 
+png(filename = "./graficas/pregunta2_porcentajes_comorbilidades.png", width = 480, height = 320, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
 Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Esperanza), y=Esperanza))+
-    geom_bar(stat = "identity", color="black", fill=rgb(.3,0.2,0.5,0.7) )+
-    labs(title="Valor esperado de la probabilidad de fallecer por comorbilidad",
+    geom_bar(stat = "identity", color="black", fill=rgb(.2, .7,  .2) )+
+    theme_bw()+
+    labs(title="Probabilidad de fallecer por comorbilidad",
          x="Comorbilidad",
          y="Probabilidad de fallecimiento")+
     theme(axis.text.x = element_text(angle = 20, hjust = 1),
@@ -426,9 +430,41 @@ Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Esperanza), y=Esperanza))+
           axis.title = element_text(size = 14),
           plot.title = element_text(size = 20),
           plot.subtitle = element_text(size = 16))
+dev.off()
 
+porct_comorb = c(25.5, 75.2, 10.3, 8.8, 10, 7, 70.3, 12.2, 4)
+Ebetas$porct_comorb = porct_comorb
+Ebetas <- Ebetas %>% mutate(Numero_esperado = round(100000*Esperanza*porct_comorb/100, digits = 0))
+Ebetas
+
+print(xtable(Ebetas, type = "latex"), file = "fallecimientos_esperados_comorbilidades.tex")
+
+png(filename = "./graficas/pregunta3_numero_fallecimientos.png", width = 480, height = 320, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Numero_esperado), y=Numero_esperado))+
+    geom_bar(stat = "identity", color="black", fill=rgb(0.6,0.1,0.3) )+
+    theme_bw()+
+    labs(title="Número esperado de fallecimientos por comorbilidad",
+         subtitle = "Por cada cienmil infectados",
+         x="Comorbilidad",
+         y="Número de fallecimientos")+
+    theme(axis.text.x = element_text(angle = 20, hjust = 1),
+          legend.text = element_text(size = 14),
+          axis.title = element_text(size = 14),
+          plot.title = element_text(size = 15),
+          plot.subtitle = element_text(size = 16))
+dev.off()
 
 ## Investigar el porcentaje de la población que tiene cada comorbilidad
+## Diabetes https://www.milenio.com/ciencia-y-salud/diabetes-en-mexico-2020-estadisticas-y-porcentaje
+## Obesidad https://www.jornada.com.mx/ultimas/economia/2020/06/16/mexico-el-pais-con-mayor-obesidad-de-al-ocde-4377.html
+## Hipertensión https://www.insp.mx/avisos/5398-hipertension-arterial-problema-salud-publica.html
+## Tabaquismo https://www.paho.org/mex/index.php?option=com_content&view=article&id=97:tabaco-cifras-mexico&Itemid=387
+## EPOC https://www.gob.mx/salud/prensa/10-por-ciento-de-la-poblacion-mexicana-padece-epoc
+## Asma https://www.gob.mx/salud/prensa/siete-por-ciento-de-la-poblacion-en-mexico-padece-asma
+## Cardiovascular 70.3 % https://asociacionale.org.mx/enfermedades-cardiovasculares-principal-causa-de-muerte-entre-los-mexicanos/#:~:text=A.C.%20(PACO).-,En%20M%C3%A9xico%2C%20el%2019%25%20de%20mujeres%20y%20hombres%20de%2030,o%20dislipidemia%20(14%20millones)%2C
+## Renal cronica 12.2 % https://www.insp.mx/avisos/5296-enfermedad-renal-cronica-mexico.html#:~:text=En%202017%2C%20se%20report%C3%B3%20una,habitantes%20en%20M%C3%A9xico(2).
+## Inmunospr 4 a nivel global % https://www.pisa.com.mx/personas-con-enfermedades-autoinmunes-y-en-tratamiento-inmunosupresor-vulnerables-al-covid-19/
 
 ## Pregunta 3
 
@@ -441,11 +477,11 @@ p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION) %>%
 p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR)
 
 p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
-            filter(SINT_FALLECE, SINT_FALLECE>=0)
+            filter( SINT_FALLECE>=0)
 
 p <- ggplot(p3i, aes(x=SINT_INGR))+
-            geom_histogram()
-p +  stat_bin(binwidth = 1, drop = FALSE, right = FALSE, col = "black")+
+            geom_bar()
+p +  stat_count(geom = "bar")+
             labs(title = "Frequencia de días que tarda una persona en acudir a la clínica",
          x= "Número de días",
          y= "Frecuencia") +
@@ -455,8 +491,15 @@ p +  stat_bin(binwidth = 1, drop = FALSE, right = FALSE, col = "black")+
 dev.copy(png, file="./graficas/pregunta3_sintomas_ingreso.png")
 dev.off()
 
+ll = function(l){
+    n=length(p3i$SINT_INGR)
+    loglh = log(l)*sum(p3i$SINT_INGR) - n*l - sum(log(p3i$SINT_INGR))
+    -loglh
+}
+
+
 p <- ggplot(p3f, aes(x=SINT_FALLECE))+
-            geom_bar()
+            geom_bar(stat = "identity", color="black", fill)
 p + stat_count(geom = "bar")+
             labs(title = "Frequencia de días que tarda una persona en morir a partir de que tiene sìntomas",
                  x= "Número de días",
@@ -473,15 +516,18 @@ lambda2 <- mean(p3f$SINT_FALLECE)
 sdi <- sd(p3i$SINT_INGR)
 sdf <- sd(p3f$SINT_FALLECE)
 
-
-
+boxplot(p3f$SINT_FALLECE)
+boxplot(p3i$SINT_INGR)
 
 ## Queremos saber si mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 
 
-
-
-
+p3_2 = p3 %>% filter(!is.na(SINT_FALLECE)) %>%
+    select(SINT_INGR,SINT_FALLECE) %>%
+    mutate(INGR_FALLECE = SINT_FALLECE-SINT_INGR)
+plot(p3_2[,c(1,2)])
+abline(lm(p3_2$SINT_FALLECE~p3_2$SINT_INGR))
+plot[p3_2[p3_2$SINT_INGR>40,]]
 ## Calcular la tasa de positividad para la CDMX por alcaldia
 
 alcaldias <- read_excel("./diccionario_datos_covid19/Catalogos_071020.xlsx", sheet = "Catálogo MUNICIPIOS")
@@ -500,3 +546,17 @@ p4 <- p4[1:16,]
 p4$MUNICIPIO_RES <- alcaldias$MUNICIPIO
 print(xtable(p4, type = "latex"), file = "positividad_por_alcaldias_cdmx.tex")
 
+png(filename = "./graficas/pregunta4_positividad_x_alcaldia.png", width = 500, height = 320, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+p4 %>% ggplot(aes(x=reorder(MUNICIPIO_RES, -positividad), y=positividad))+
+    geom_bar(stat = "identity", color="black", fill=rgb(.4,.7,.2))+
+    theme_bw()+
+    labs(title = "Positividad por alcaldía en la CDMX",
+         x="Alcaldía",
+         y="Positividad en porcentaje")+
+    theme(axis.text.x = element_text(angle = 40, hjust = 1),
+          legend.text = element_text(size = 14),
+          axis.title = element_text(size = 14),
+          plot.title = element_text(size = 15),
+          plot.subtitle = element_text(size = 16))
+dev.off()
