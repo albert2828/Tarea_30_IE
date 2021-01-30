@@ -86,7 +86,7 @@ p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
     theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad",
                  x = "Fecha",
                  y= "Muertes",
@@ -94,7 +94,7 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_color_manual(values = mycolors)
 
@@ -107,7 +107,7 @@ p <- ggplot(p1, aes(x=FECHA_DEF, y=NUM_DEF, colour = Sexo_Edad))+
             geom_line(aes(linetype = rango_esp), size = 1)
 p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Divido por sexo y rangos de edad. Tres grupos resaltados",
                  x = "Fecha",
                  y= "Muertes",
@@ -115,7 +115,7 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme(axis.text.x = element_text(angle = 45, hjust = 1),
                   legend.text = element_text(size = 14),
                   axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 20),
+                  plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 16))+
             scale_linetype_manual(values = c("dashed", "solid"), guide = "none")+
             scale_color_manual(values = mycolors)
@@ -169,7 +169,7 @@ p1 %>% filter(Sexo_Edad == "H 60 +") %>%
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres mayores de 60 años",
                  x = "Fecha",
                  y= "Muertes")+
@@ -226,7 +226,7 @@ p1 %>% filter(Sexo_Edad == "H 40-59") %>%
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres de entre 40 y 59 años",
                  x = "Fecha",
                  y= "Muertes")+
@@ -283,7 +283,7 @@ p1 %>% filter(Sexo_Edad == "M 60 +") %>%
             geom_smooth()+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Mujeres mayores de 60 años",
                  x = "Fecha",
                  y= "Muertes")+
@@ -357,7 +357,7 @@ p1 %>% filter(Sexo_Edad == "M 60 +" | Sexo_Edad == "H 40-59") %>%
             geom_line(size = 1)+
             scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
             theme_bw()+
-            labs(title = "Muertes por día en la CDMX a partir del 4 de abril de 2020",
+            labs(title = "Fallecimientos por día en la CDMX a partir del 4 de abril de 2020",
                  subtitle = "Hombres de entre 40 y 59 años y mujeres mayores de 60 años",
                  x = "Fecha",
                  y= "Muertes")+
@@ -499,7 +499,7 @@ ll = function(l){
 
 
 p <- ggplot(p3f, aes(x=SINT_FALLECE))+
-            geom_bar(stat = "identity", color="black", fill)
+            geom_bar()
 p + stat_count(geom = "bar")+
             labs(title = "Frequencia de días que tarda una persona en morir a partir de que tiene sìntomas",
                  x= "Número de días",
@@ -521,13 +521,9 @@ boxplot(p3i$SINT_INGR)
 
 ## Queremos saber si mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 
+proporciones <- c(NULL)
 
-p3_2 = p3 %>% filter(!is.na(SINT_FALLECE)) %>%
-    select(SINT_INGR,SINT_FALLECE) %>%
-    mutate(INGR_FALLECE = SINT_FALLECE-SINT_INGR)
-plot(p3_2[,c(1,2)])
-abline(lm(p3_2$SINT_FALLECE~p3_2$SINT_INGR))
-plot[p3_2[p3_2$SINT_INGR>40,]]
+
 ## Calcular la tasa de positividad para la CDMX por alcaldia
 
 alcaldias <- read_excel("./diccionario_datos_covid19/Catalogos_071020.xlsx", sheet = "Catálogo MUNICIPIOS")
