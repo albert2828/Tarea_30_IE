@@ -2,9 +2,6 @@ library(ggplot2)
 library(dplyr)
 library(xtable)
 library(readxl)
-library(grid)
-library(gridExtra)
-
 
 source("extras.r")
 source("auxiliares.r")
@@ -16,7 +13,6 @@ if (!dir.exists("graficas")){
 my_filedate <-  "210117" # format(Sys.Date(), "%y%m%d")
 # formato "yymmdd", es mejor probar con el día anterior
 
-
 tt <- system.time(BD <- leo_base(my_filedate))[3]
 tt # tiempo de lectura de la base 
 # 33 seg cuando es local (se leyó del servidor anteriormente y quedó guardada)
@@ -25,7 +21,6 @@ tt # tiempo de lectura de la base
 #head(BD)
 #str(BD)
 #names(BD)
-
 
 ## Extraer solo las variables que nos interesan para los anális
 tarea <- BD %>% 
@@ -42,9 +37,8 @@ tarea$FECHA_DEF <- unlist(lapply(tarea$FECHA_DEF,cambio))
 tarea$FECHA_DEF <- as.Date(tarea$FECHA_DEF)
 tarea$FECHA_DEF[tarea$FECHA_DEF==as.Date("1900-01-31")] = NA            
 
-            
 ## Cambiar varaible de sexo por H - M
-tarea$SEXO <- sapply(tarea$SEXO, cambio_sex)
+tarea$SEXO <- sapply(tarea$SEXO, cambio_sex) # Esto se pudo hacer usando la función cut
 
 ## Cambiar variables a 0's  1's
 tarea$DIABETES <- sapply(tarea$DIABETES, cambio_sino)
@@ -56,7 +50,6 @@ tarea$CARDIOVASCULAR <- sapply(tarea$CARDIOVASCULAR, cambio_sino)
 tarea$OBESIDAD <- sapply(tarea$OBESIDAD, cambio_sino)
 tarea$RENAL_CRONICA <- sapply(tarea$RENAL_CRONICA, cambio_sino)
 tarea$TABAQUISMO <- sapply(tarea$TABAQUISMO, cambio_sino)
-
 
 ## Dividir por rangos de edad
 tarea <- mutate(tarea, RANGO_DE_EDAD = as.factor(sapply(tarea$EDAD, rango_edad)))
@@ -122,7 +115,6 @@ p+scale_x_date(date_labels = "%Y %b %d", date_breaks = "1 week")+
 
 dev.off()
 
-
 ## Analizamos cambios en la tendencia analizando los intervalos de confianza para la media antes y 
 ## después de un tiempo t0.
 
@@ -150,7 +142,6 @@ int.conf1 = quantile(media.muestral.1, probs = c(.025,.975))
 int.conf1
 
 bootstap2 = replicate(n=1000, sample(h.60.segunda.tend, replace = TRUE))
-
 media.muestral.2 <- apply(bootstap2, MARGIN = 2, FUN = mean)
 int.conf2 = quantile(media.muestral.2, probs = c(.025,.975))
 # Intervalo de confianza para la media de muertes de H- 60+ después del 2020-06-15 antes del 2020-09-28
@@ -208,7 +199,7 @@ h.40.59.tercer.tend <- h.40.59.tercer.tend$NUM_DEF
 bootstap4 <- replicate(n=1000, sample(h.40.59.primer.tend, replace = T))
 media.muestral.4 <- apply(bootstap4, MARGIN = 2, FUN = mean)
 int.conf4 <- quantile(media.muestral.4, probs = c(.025,.975))
-# Intervalo de confianza para la media de muertes de H- 40-59 después del 2020-06-15 antes del 2020-09-28
+# Intervalo de confianza para la media de muertes de H- 40-59 antes del 2020-06-15
 int.conf4
 
 bootstap5 <- replicate(n=1000, sample(h.40.59.segunda.tend, replace = T))
@@ -249,7 +240,6 @@ p1 %>% filter(Sexo_Edad == "H 40-59") %>%
                      yend = 8, arrow= arrow(length = unit(4, "mm")))+
             annotate(geom = "text", x=as.Date("2020-10-18"), y=16, label="Segundo cambio", hjust = "left")
 dev.off()
-
 
 ## Cambios de tendencia en mujeres mayores de 60 años
 ## El primer cambio de tendencia lo observamos alrededor del 20 de junio y el segundo alrededor del 28 de septiembre
@@ -466,7 +456,6 @@ p3i %>% filter(SINT_INGR<=40) %>%
             theme(axis.title = element_text(size = 14),
                   plot.title = element_text(size = 15),
                   plot.subtitle = element_text(size = 14))
-
 dev.copy(png, file="./graficas/pregunta3_sintomas_ingreso.png")
 dev.off()
 
@@ -565,7 +554,6 @@ media.muestral.17 <- apply(bootstap17, MARGIN = 2, FUN = mean)
 ## Intervalo de confianza para la media de días que tarda una persona mayor de 60 años en acudir a la clínica
 (int.conf17 <- quantile(media.muestral.17, probs = c(.025,.975)))
 
-
 ## Por comorbilidad
 p3.3 = p3[tarea$DEFUNCION==1,]
 dias.diabetes = p3.3$SINT_FALLECE[(!is.na(p3.3$DIABETES))&(p3.3$DIABETES==1)]
@@ -657,7 +645,6 @@ dev.off()
 alcaldias <- read_excel("./diccionario_datos_covid19/Catalogos_071020.xlsx", sheet = "Catálogo MUNICIPIOS")
 alcaldias <- alcaldias[alcaldias$CLAVE_ENTIDAD == "09",]
 alcaldias <- alcaldias[1:16,1:2]
-
 
 p4 <- BD %>% select(ENTIDAD_RES ,MUNICIPIO_RES, TOMA_MUESTRA_LAB, RESULTADO_LAB) %>%
             filter(ENTIDAD_RES == 9, TOMA_MUESTRA_LAB == 1) %>%
