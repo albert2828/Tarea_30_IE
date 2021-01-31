@@ -455,14 +455,12 @@ dev.off()
 
 ## Pregunta 3
 
-p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION) %>%
+p3 <- tarea %>% select(FECHA_SINTOMAS, FECHA_INGRESO, FECHA_DEF, DEFUNCION, RANGO_DE_EDAD, DIABETES, EPOC, 
+                       ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR, OBESIDAD, RENAL_CRONICA, TABAQUISMO ) %>%
             mutate(SINT_INGR = as.integer(FECHA_INGRESO - FECHA_SINTOMAS), 
                    SINT_FALLECE = as.integer(FECHA_DEF-FECHA_SINTOMAS))
 
-## Revisar los outliers
-
 p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR)
-
 p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
             filter( SINT_FALLECE>=0)
 
@@ -541,6 +539,100 @@ densidades %>% ggplot(aes(x=bin.neg, fill=categoría))+
     annotate(geom = "text", x=200, y=.050, label="p=0.095")
 dev.copy(png, file="./graficas/pregunta3_densidades.png")
 dev.off()
+
+## Queremos ver si existe diferencias entre comorbilidades y rangos de edad
+## Por rango de edad
+
+edad.0.19 = p3 %>% filter(RANGO_DE_EDAD=="0-19") %>% select(SINT_INGR)
+edad.0.19 = edad.0.19$SINT_INGR
+
+edad.20.39 = p3 %>% filter(RANGO_DE_EDAD=="20-39") %>% select(SINT_INGR)
+edad.20.39=edad.20.39$SINT_INGR
+
+edad.40.59 = p3 %>% filter(RANGO_DE_EDAD=="40-59") %>% select(SINT_INGR)
+edad.40.59 = edad.40.59$SINT_INGR
+
+edad.60 = edad.20.39 = p3 %>% filter(RANGO_DE_EDAD=="60 +") %>% select(SINT_INGR)
+edad.60 = edad.60$SINT_INGR
+
+bootstap14 <- replicate(n=1000, sample(edad.0.19, replace = T))
+media.muestral.14 <- apply(bootstap14, MARGIN = 2, FUN = mean)
+## Intervalo de confianza para la media de días que tarda una persona de entre 0 y 19 años en acudir a la clínica
+(int.conf14 <- quantile(media.muestral.14, probs = c(.025,.975)))
+
+bootstap15 <- replicate(n=1000, sample(edad.20.39, replace = T))
+media.muestral.15 <- apply(bootstap15, MARGIN = 2, FUN = mean)
+## Intervalo de confianza para la media de días que tarda una persona de entre 20 y 39 años en acudir a la clínica
+(int.conf15 <- quantile(media.muestral.15, probs = c(.025,.975)))
+
+bootstap16 <- replicate(n=1000, sample(edad.40.59, replace = T))
+media.muestral.16 <- apply(bootstap16, MARGIN = 2, FUN = mean)
+## Intervalo de confianza para la media de días que tarda una persona de entre 40 y 59 años en acudir a la clínica
+(int.conf16 <- quantile(media.muestral.16, probs = c(.025,.975)))
+
+bootstap17 <- replicate(n=1000, sample(edad.60, replace = T))
+media.muestral.17 <- apply(bootstap17, MARGIN = 2, FUN = mean)
+## Intervalo de confianza para la media de días que tarda una persona mayor de 60 años en acudir a la clínica
+(int.conf17 <- quantile(media.muestral.17, probs = c(.025,.975)))
+
+
+## Por comorbilidad
+p3.3 = p3[tarea$DEFUNCION==1,]
+dias.diabetes = p3.3$SINT_FALLECE[(!is.na(p3.3$DIABETES))&(p3.3$DIABETES==1)]
+dias.epoc = p3.3$SINT_FALLECE[(!is.na(p3.3$EPOC))&(p3.3$EPOC==1)]
+dias.asma = p3.3$SINT_FALLECE[(!is.na(p3.3$ASMA))& (p3.3$ASMA==1)]
+dias.inmusupr = p3.3$SINT_FALLECE[(!is.na(p3.3$INMUSUPR))&(p3.3$INMUSUPR==1)]
+dias.hipertension = p3.3$SINT_FALLECE[(!is.na(p3.3$HIPERTENSION))&(p3.3$HIPERTENSION==1)]
+dias.cardio = p3.3$SINT_FALLECE[(!is.na(p3.3$CARDIOVASCULAR))&(p3.3$CARDIOVASCULAR==1)]
+dias.obesidad = p3.3$SINT_FALLECE[(!is.na(p3.3$OBESIDAD))&(p3.3$OBESIDAD==1)]
+dias.renal = p3.3$SINT_FALLECE[(!is.na(p3.3$RENAL_CRONICA))&(p3.3$RENAL_CRONICA==1)]
+dias.tabaco = p3.3$SINT_FALLECE[(!is.na(p3.3$TABAQUISMO))&(p3.3$TABAQUISMO==1)]
+    
+bootstap18 = replicate(n=100, sample(dias.diabetes, replace = TRUE))
+media.muestral.18 = apply(bootstap18, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con diabetes
+(int.conf18 = quantile(media.muestral.18, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap19 = replicate(n=100, sample(dias.epoc, replace = TRUE))
+media.muestral.19 = apply(bootstap19, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con epoc
+(int.conf19 = quantile(media.muestral.19, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap20 = replicate(n=100, sample(dias.asma, replace = TRUE))
+media.muestral.20 = apply(bootstap20, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con asma
+(int.conf20 = quantile(media.muestral.20, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap21 = replicate(n=100, sample(dias.inmusupr, replace = TRUE))
+media.muestral.21 = apply(bootstap21, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con inmusupr
+(int.conf21 = quantile(media.muestral.21, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap22 = replicate(n=100, sample(dias.hipertension, replace = TRUE))
+media.muestral.22 = apply(bootstap22, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con hipertensión
+(int.conf22 = quantile(media.muestral.22, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap23 = replicate(n=100, sample(dias.cardio, replace = TRUE))
+media.muestral.23 = apply(bootstap23, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con cardiovascular
+(int.conf23 = quantile(media.muestral.23, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap24 = replicate(n=100, sample(dias.obesidad, replace = TRUE))
+media.muestral.24 = apply(bootstap24, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con obesidad
+(int.conf24 = quantile(media.muestral.24, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap25 = replicate(n=100, sample(dias.renal, replace = TRUE))
+media.muestral.25 = apply(bootstap25, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con renal crónica
+(int.conf25 = quantile(media.muestral.25, probs = c(.25,.75), na.rm = TRUE))
+
+bootstap26 = replicate(n=100, sample(dias.tabaco, replace = TRUE))
+media.muestral.26 = apply(bootstap26, MARGIN = 2, FUN = mean)
+# Intervalo de confianza de la media de días que tarda en fallecer una persona con tabaquismo
+(int.conf26 = quantile(media.muestral.26, probs = c(.25,.75), na.rm = TRUE))
+
 ## Queremos saber si mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 
 proporciones_previas <- c(NULL)
