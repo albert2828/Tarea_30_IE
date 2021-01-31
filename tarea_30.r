@@ -146,18 +146,21 @@ bootstap1 = replicate(n=1000, sample(h.60.primer.tend, replace = TRUE))
 
 media.muestral.1 <- apply(bootstap1, MARGIN = 2, FUN = mean)
 int.conf1 = quantile(media.muestral.1, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 60+ antes del 2020-06-15
 int.conf1
 
 bootstap2 = replicate(n=1000, sample(h.60.segunda.tend, replace = TRUE))
 
 media.muestral.2 <- apply(bootstap2, MARGIN = 2, FUN = mean)
 int.conf2 = quantile(media.muestral.2, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 60+ después del 2020-06-15 antes del 2020-09-28
 int.conf2
 
 bootstap3 = replicate(n=1000, sample(h.60.tercer.tend, replace = TRUE))
 
 media.muestral.3 <- apply(bootstap3, MARGIN = 2, FUN = mean)
 int.conf3 = quantile(media.muestral.3, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 60+ después del 2020-09-28
 int.conf3
 
 ## Gráfica con los cambios de tendencias
@@ -205,16 +208,19 @@ h.40.59.tercer.tend <- h.40.59.tercer.tend$NUM_DEF
 bootstap4 <- replicate(n=1000, sample(h.40.59.primer.tend, replace = T))
 media.muestral.4 <- apply(bootstap4, MARGIN = 2, FUN = mean)
 int.conf4 <- quantile(media.muestral.4, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 40-59 después del 2020-06-15 antes del 2020-09-28
 int.conf4
 
 bootstap5 <- replicate(n=1000, sample(h.40.59.segunda.tend, replace = T))
 media.muestral.5 <- apply(bootstap5, MARGIN = 2, FUN = mean)
 int.conf5 <- quantile(media.muestral.5, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 40-59 después del 2020-06-15 antes del 2020-10-12
 int.conf5
 
 bootstap6 <- replicate(n=1000, sample(h.40.59.tercer.tend, replace = T))
 media.muestral.6 <- apply(bootstap6, MARGIN = 2, FUN = mean)
 int.conf6 <- quantile(media.muestral.6, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de H- 40-59 después del 2020-09-28
 int.conf6
 
 ## Gráfica con los cambios de tendencias
@@ -262,16 +268,19 @@ m.60.tercer.tend <- m.60.tercer.tend$NUM_DEF
 bootstap7 <- replicate(n=1000, sample(m.60.primer.tend, replace =T))
 media.muestral.7 <- apply(bootstap7, MARGIN = 2, FUN = mean)
 int.conf7 <- quantile(media.muestral.7, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de M- 60+ antes del 2020-06-20
 int.conf7
 
 bootstap8 <- replicate(n=1000, sample(m.60.segunda.tend, replace =T))
 media.muestral.8 <- apply(bootstap8, MARGIN = 2, FUN = mean)
 int.conf8 <- quantile(media.muestral.8, probs = c(.025,.975))
+# Intervalo de confianza para la media de muertes de M- 60+ después del 2020-06-20 y antes del "2020-09-28"
 int.conf8
 
 bootstap9 <- replicate(n=1000, sample(m.60.tercer.tend, replace =T))
 media.muestral.9 <- apply(bootstap9, MARGIN = 2, FUN = mean)
 int.conf9 <- quantile(media.muestral.9, probs = c(.025,.975))
+# Intervalo de confianza  para la media de muertes de M- 60+ después del 2020-09-28
 int.conf9
 
 ## Gráfica con los cambios de tendencias
@@ -329,7 +338,7 @@ bootstap11 <- replicate(n=1000, sample(m.60.tend.menor, replace = T))
 media.muestral.11 <- apply(bootstap11, MARGIN = 2, FUN = mean)
 int.conf11 <- quantile(media.muestral.11, probs = c(.025,.975))
 ## Intervalo del 95% de confianza de la media de fallecimientos de mujeres mayores de 60 años de edad
-## antes del 20 de julio
+## después del 20 de julio y antes del 
 int.conf11
 
 bootstap12 <- replicate(n=1000, sample(h.40.59.tend.menor, replace = T))
@@ -384,31 +393,10 @@ for (i in 2:10) {
 }
 
 
-x <- seq(0.001,.999, by = 0.001)
-
-betas <- list(NULL)
-comorbilidades <- names(p2[,2:10])
-for (i in 2:10){
-            a = tables[[i-1]][1,2]
-            b = tables[[i-1]][1,1] + tables[[i-1]][2,1] + tables[[i-1]][2,2]
-            betas[[i-1]] <- data.frame(x, dist = dbeta(x, shape1 = a, shape2 = b), 
-                                       comorbilidad = rep(comorbilidades[i-1], times = length(x)))
-}
-
-df_betas <- betas[[1]]
-
-for (i in 2:9) {
-        df_betas <- rbind(df_betas, betas[[i]])
-}
-
-
-df_betas %>% ggplot(aes(x=x, y=dist, colour = comorbilidad))+
-    geom_line(size=2)
-
 Ebetas <- c(NULL)
 for (i in 1:9){
-    a = tables[[i]][1,2] + 1/2
-    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2] + 3/2
+    a = tables[[i]][1,2]
+    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2]
     Ebetas[i] = a/(a+b)
 }
 
@@ -436,7 +424,6 @@ porct_comorb = c(25.5, 75.2, 10.3, 8.8, 10, 7, 70.3, 12.2, 4)
 Ebetas$porct_comorb = porct_comorb
 Ebetas <- Ebetas %>% mutate(Numero_esperado = round(100000*Esperanza*porct_comorb/100, digits = 0))
 Ebetas
-
 print(xtable(Ebetas, type = "latex"), file = "fallecimientos_esperados_comorbilidades.tex")
 
 png(filename = "./graficas/pregunta3_numero_fallecimientos.png", width = 480, height = 320, units = "px", 
@@ -479,50 +466,109 @@ p3i <- p3 %>% select(FECHA_SINTOMAS, SINT_INGR)
 p3f <- p3 %>% select(FECHA_SINTOMAS, SINT_FALLECE) %>%
             filter( SINT_FALLECE>=0)
 
-p <- ggplot(p3i, aes(x=SINT_INGR))+
-            geom_bar()
-p +  stat_count(geom = "bar")+
+p3i %>% filter(SINT_INGR<=40) %>% 
+    ggplot(aes(x=SINT_INGR))+
+            geom_bar(color="black", fill=rgb(.8,.3,.6))+
+    theme_bw()+
+            stat_count(geom = "bar")+
             labs(title = "Frequencia de días que tarda una persona en acudir a la clínica",
+                 subtitle = "Gráfica hasta n=40",
          x= "Número de días",
          y= "Frecuencia") +
             theme(axis.title = element_text(size = 14),
-                  plot.title = element_text(size = 15))
+                  plot.title = element_text(size = 15),
+                  plot.subtitle = element_text(size = 14))
 
 dev.copy(png, file="./graficas/pregunta3_sintomas_ingreso.png")
 dev.off()
 
-ll = function(l){
-    n=length(p3i$SINT_INGR)
-    loglh = log(l)*sum(p3i$SINT_INGR) - n*l - sum(log(p3i$SINT_INGR))
-    -loglh
-}
-
-
-p <- ggplot(p3f, aes(x=SINT_FALLECE))+
-            geom_bar()
-p + stat_count(geom = "bar")+
-            labs(title = "Frequencia de días que tarda una persona en morir a partir de que tiene sìntomas",
+p3f %>% filter(SINT_FALLECE<=60) %>% 
+    ggplot(aes(x=SINT_FALLECE))+
+            geom_bar()+
+    theme_bw()+
+    stat_count(geom = "bar")+
+            labs(title = "Frequencia de días que tarda una persona en fallecer a partir de que tiene sìntomas",
+                 subtitle = "Gráfica hasta n=60",
                  x= "Número de días",
                  y= "Frecuencia") +
             theme(axis.title = element_text(size = 14),
                   plot.title = element_text(size = 15))
-
 dev.copy(png, file="./graficas/pregunta3_sintomas_fallecimiento.png")
 dev.off()
 
+## Estadísticas centrales de los días que tarda una persona en acudir a la clínica desde que tiene síntomas
+(media.i=mean(p3i$SINT_INGR))
+(desviacion.std.i = sd(p3i$SINT_INGR))
+(mediana.i=median(p3i$SINT_INGR))
+(quantiles.i=quantile(p3i$SINT_INGR, probs = c(.25,.75)))
+(min.i=min(p3i$SINT_INGR))
+(max.i=max(p3i$SINT_INGR))
 
-lambda1 <- mean(p3i$SINT_INGR)
-lambda2 <- mean(p3f$SINT_FALLECE)
-sdi <- sd(p3i$SINT_INGR)
-sdf <- sd(p3f$SINT_FALLECE)
+## Estadísticas centrales de los días que tarda una persona en fallecer desde que tiene sintomas
+(media.f=mean(p3f$SINT_FALLECE))
+(desviacion.std.f=sd(p3f$SINT_FALLECE))
+(meiana.f=median(p3f$SINT_FALLECE))
+(quantiles.f=quantile(p3f$SINT_FALLECE, probs = c(.25,.75)))
+(min.f=min(p3f$SINT_FALLECE))
+(max.f=min(p3f$SINT_FALLECE))
 
-boxplot(p3f$SINT_FALLECE)
-boxplot(p3i$SINT_INGR)
+# Queremos ajustar la distribución de los días que tarda una persona en fallecer a partir de que tiene síntimas
 
+(mu = mean(p3f$SINT_FALLECE))
+(sigma = sd(p3f$SINT_FALLECE))
+(p=0.09497474)
+(r=round((mu^2)/(sigma^2-mu),digits = 0))
+
+set.seed(22)
+bin.neg= rnbinom(n=nrow(p3f), size=2.57, prob = 0.09497474)
+bin.neg = data.frame(bin.neg=bin.neg, categoría=rep("simulacion", length(bin.neg)))
+
+p3f.cat = data.frame(bin.neg=p3f$SINT_FALLECE, categoría=rep("muestra", nrow(p3f)))
+
+densidades = rbind(bin.neg,p3f.cat)
+
+densidades %>% ggplot(aes(x=bin.neg, fill=categoría))+
+    geom_density(alpha=0.4)+
+    theme_bw()+
+    labs(title = "Comparación de la densidad de fallecimientos vs binomial negativa",
+         x="k",
+         y="Probabilidad")+
+    theme(axis.title = element_text(size = 14),
+          plot.title = element_text(size = 15),
+          legend.title = element_blank())+
+    annotate(geom = "text", x=190, y=0.06, label="Binomial-Negativa")+
+    annotate(geom = "text", x=195, y=.055, label="r=3")+
+    annotate(geom = "text", x=200, y=.050, label="p=0.095")
+dev.copy(png, file="./graficas/pregunta3_densidades.png")
+dev.off()
 ## Queremos saber si mientras más tiempo tarda una persona en acudir al hospital, más probabilidad de morir tiene
 
-proporciones <- c(NULL)
+proporciones_previas <- c(NULL)
+proporciones_posteriores <- c(NULL)
+for (i in 0:21){
+    a=p3$DEFUNCION[p3$SINT_INGR<=i]
+    b=sum(p3$SINT_INGR<=i)
+    c=p3$DEFUNCION[p3$SINT_INGR>i]
+    d=sum(p3$SINT_INGR>i)
+    proporciones_previas[i+1]= table(a)[[2]]/b
+    proporciones_posteriores[i+1]= table(c)[[2]]/d
+}
 
+proporciones = proporciones_posteriores/proporciones_previas
+tabla.proporciones = data.frame(Num_dias = 0:21, proporciones = proporciones)
+
+png(filename = "./graficas/pregunta3_taza_proporciones.png", width = 480, height = 320, units = "px", 
+    pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
+tabla.proporciones %>% ggplot(aes(x=Num_dias, y=proporciones))+
+    geom_line(size=2, color = "red")+
+    theme_bw()+
+    labs(title = "Taza de proporciones de personas que fallecieron",
+         x="Número de días",
+         y="Taza de proporción")+
+    theme(legend.text = element_text(size = 14),
+          axis.title = element_text(size = 14),
+          plot.title = element_text(size = 15))
+dev.off()
 
 ## Calcular la tasa de positividad para la CDMX por alcaldia
 
