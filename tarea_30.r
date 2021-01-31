@@ -386,28 +386,18 @@ dev.off()
 p2 <- select(tarea, DEFUNCION, DIABETES, EPOC, ASMA, INMUSUPR, HIPERTENSION, CARDIOVASCULAR,
              OBESIDAD, RENAL_CRONICA, TABAQUISMO) 
 
-tables <- list(NULL)
+probabilidades = data.frame(comorbilidad = rep(NA, 9), prob = rep(NA, 9))
 
-for (i in 2:10) {
-            tables[[i-1]] <- table(p2$DEFUNCION, p2[,i])
+for(i in 2:10){
+    probabilidades[i-1,1] = names(p2)[i]
+    pc = table(p2$DEFUNCION, p2[,i])[[2,2]]
+    pf = sum(p2$DEFUNCION)
+    probabilidades[i-1,2] = round(pc/pf, digits = 3)
 }
-
-
-Ebetas <- c(NULL)
-for (i in 1:9){
-    a = tables[[i]][1,2]
-    b = tables[[i]][1,1] + tables[[i]][2,1] + tables[[i]][2,2]
-    Ebetas[i] = a/(a+b)
-}
-
-Ebetas = data.frame(comorbilidades, Esperanza = Ebetas)
-Ebetas <- Ebetas %>% arrange(desc(Esperanza))
-Ebetas
-print(xtable(Ebetas, type = "latex"), file = "probabilidad_comorbilidades.tex")
 
 png(filename = "./graficas/pregunta2_porcentajes_comorbilidades.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
-Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Esperanza), y=Esperanza))+
+probabilidades %>% ggplot(aes(x=reorder(comorbilidades, -prob), y=prob))+
     geom_bar(stat = "identity", color="black", fill=rgb(.2, .7,  .2) )+
     theme_bw()+
     labs(title="Probabilidad de fallecer por comorbilidad",
@@ -420,15 +410,15 @@ Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Esperanza), y=Esperanza))+
           plot.subtitle = element_text(size = 16))
 dev.off()
 
-porct_comorb = c(25.5, 75.2, 10.3, 8.8, 10, 7, 70.3, 12.2, 4)
-Ebetas$porct_comorb = porct_comorb
-Ebetas <- Ebetas %>% mutate(Numero_esperado = round(100000*Esperanza*porct_comorb/100, digits = 0))
-Ebetas
-print(xtable(Ebetas, type = "latex"), file = "fallecimientos_esperados_comorbilidades.tex")
+porct_comorb = c(10.3, 10, 7, 4, 25.5, 70.3, 75.2, 12.2, 8.8)
+probabilidades$porct_comorb = porct_comorb
+probabilidades <- probabilidades %>% mutate(Numero_esperado = round(100000*prob*porct_comorb/100, digits = 0))
+probabilidades
+print(xtable(probabilidades, type = "latex"), file = "fallecimientos_esperados_comorbilidades.tex")
 
 png(filename = "./graficas/pregunta3_numero_fallecimientos.png", width = 480, height = 320, units = "px", 
     pointsize = 12, bg = "white", res = NA, restoreConsole = TRUE)
-Ebetas %>% ggplot(aes(x=reorder(comorbilidades, -Numero_esperado), y=Numero_esperado))+
+probabilidades %>% ggplot(aes(x=reorder(comorbilidades, -Numero_esperado), y=Numero_esperado))+
     geom_bar(stat = "identity", color="black", fill=rgb(0.6,0.1,0.3) )+
     theme_bw()+
     labs(title="Número esperado de fallecimientos por comorbilidad",
@@ -444,7 +434,7 @@ dev.off()
 
 ## Investigar el porcentaje de la población que tiene cada comorbilidad
 ## Diabetes https://www.milenio.com/ciencia-y-salud/diabetes-en-mexico-2020-estadisticas-y-porcentaje
-## Obesidad https://www.jornada.com.mx/ultimas/economia/2020/06/16/mexico-el-pais-con-mayor-obesidad-de-al-ocde-4377.html
+## Obesidad https://politica.expansion.mx/mexico/2019/12/09/el-75-2-de-los-mexicanos-padece-obesidad-y-10-3-diabetes-ensanut
 ## Hipertensión https://www.insp.mx/avisos/5398-hipertension-arterial-problema-salud-publica.html
 ## Tabaquismo https://www.paho.org/mex/index.php?option=com_content&view=article&id=97:tabaco-cifras-mexico&Itemid=387
 ## EPOC https://www.gob.mx/salud/prensa/10-por-ciento-de-la-poblacion-mexicana-padece-epoc
